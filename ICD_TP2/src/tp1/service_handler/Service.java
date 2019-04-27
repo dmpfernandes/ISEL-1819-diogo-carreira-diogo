@@ -73,10 +73,10 @@ public class Service implements Runnable{
 				String inputLine = apanhar();
 				if(inputLine != null && !inputLine.isEmpty()) {
 					root = readXML(inputLine);
+					System.out.println(root.getLocalName());
 					String choose = root.getLocalName();
-					rootDBitems = readXMLfromFile("items.xml");
+					rootDBitems = readXMLfromFile("perguntas.xml");
 					rootDBusers = readXMLfromFile("users.xml");
-					System.out.println(rootDBusers.getChildNodes().item(0).getNodeName());
 					switch(choose){
 					case "login": // LOGIN
 						rootDBusers = readXMLfromFile("users.xml");
@@ -85,41 +85,18 @@ public class Service implements Runnable{
 						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
 							String numero = root.getAttribute("numero");
 							String tipo = root.getAttribute("tipo");
-							System.out.println("input numero - "+numero);
-							System.out.println("input tipo - "+tipo);
-							for (int i = 0; i < users.getLength(); i++) {
-								System.out.println(users.getLength());
-								String tipoDBuser = users.item(i).getAttributes().getNamedItem("tipo").getTextContent();
-								String numeroDBuser = users.item(i).getChildNodes().item(1).getLocalName();
-								System.out.println("DB numero - "+tipoDBuser);
-								System.out.println("DB tipo - "+numeroDBuser);
-//								if(users.item(i).hasAttributes()) {
-//									NamedNodeMap user_att = users.item(i).getAttributes();
-//									
-//									
-//									String dbuserTipo = user_att.getNamedItem("tipo").getTextContent();
-//				                    
-//				                    this.name = root.getChildNodes().item(0).getTextContent();
-//				                    String namedb = users.item(i).getChildNodes().item(1).getTextContent();
-//				                    String passdb = users.item(i).getChildNodes().item(3).getTextContent();
-//				                    String namelogin = root.getChildNodes().item(0).getTextContent();
-//				                    String pass = root.getChildNodes().item(1).getTextContent();
-//									if(namedb.equals(name) && passdb.equals(pass) && dbuserTipo.equals("f")) {
-//										this.userTipo = dbuserTipo;
-//										atirar("Bem Vindo Funcionario "+users.item(i).getChildNodes().item(1).getTextContent());
-//										atirou = true;
-//									}
-//									if(namedb.equals(name) && passdb.equals(pass) && dbuserTipo.equals("c")) {
-//										this.userTipo = dbuserTipo;
-//										atirar("Bem Vindo Cliente "+users.item(i).getChildNodes().item(1).getTextContent());
-//										atirou = true;
-//									}
-//									if(namedb.equals(name) && passdb.equals(pass) && dbuserTipo.equals("a")) {
-//										this.userTipo = dbuserTipo;
-//										atirar("Bem Vindo Administrador "+users.item(i).getChildNodes().item(1).getTextContent());
-//										atirou = true;
-//									}
-//								}
+							for (int i = 1; i < users.getLength(); i++) {
+								if(users.item(i).hasAttributes()) {
+									String tipoDBuser = users.item(i).getAttributes().getNamedItem("tipo").getTextContent();
+									Element e = (Element) users.item(i);
+									String numeroDBuser = e.getElementsByTagName("numero").item(0).getTextContent();
+									if(tipoDBuser.equals(tipo) && numeroDBuser.equals(numero)) {
+										this.userTipo = tipo;
+										atirar("Autenticação Validada");
+										atirou = true;
+										break;
+									}
+								}
 							}
 						} 
 						if(!atirou) {
@@ -127,10 +104,29 @@ public class Service implements Runnable{
 						}
 						break;
 					case "adicionarPergunta": // GET 	
+						System.out.println(this.userTipo);
+						if(this.userTipo != "prof" && this.userTipo != "admin") {
+							atirar("Não tem autorização para adicionar perguntas.");
+						}else {
+							rootDBitems = readXMLfromFile("perguntas.xml");
+							NodeList perguntas = rootDBitems.getChildNodes();
+							if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
+								NodeList inputPerguntas = root.getChildNodes();
+								for (int i = 0; i < inputPerguntas.getLength(); i++) {
+									System.out.println(inputPerguntas.item(i).getLocalName());
+									if(inputPerguntas.item(i).hasAttributes()) {
+										Element e = (Element) inputPerguntas.item(i);
+										e.setAttribute("id","_0"+(getlastPerguntaID()+1));
+										rootDBitems.appendChild(e);
+										outputXML(document,"perguntas.xml");
+									}
+								}
+								atirar("Pergunta/s adicionada/s com sucesso.");
+								
+							}
+						}
 						
 						break;
-						
-						
 					case "selecionarPergunta": // POST
 						
 						break;
@@ -192,6 +188,25 @@ public class Service implements Runnable{
 			 e.printStackTrace(); 
 		}
 	}
+	
+	public int getlastPerguntaID() {
+		rootDBitems = readXMLfromFile("perguntas.xml");
+		NodeList items = rootDBitems.getChildNodes();
+		int counter = 0;
+		for (int i = 0; i < items.getLength(); i++) {
+			if (items.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element e = (Element) items.item(i);
+				if(items.item(i).hasAttributes() && e.hasAttribute("id")) {
+					counter++;
+				}
+			}
+		}
+		
+	
+		return counter;
+	}
+	
+	
 	
 	public Element readXML(String xml) {
 		XPathFactory xpathFactory = XPathFactory.newInstance(); 
