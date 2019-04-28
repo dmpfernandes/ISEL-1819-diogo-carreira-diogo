@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
-<perguntas>
-    <pergunta id="_01" tema="basic" duracao="20">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><perguntas>
+    <pergunta duracao="20" id="_01" tema="basic">
         <texto>Quantos quadrados estao presentes na seguinte imagem?</texto>
         <anexoMultimedia>squares.jpeg</anexoMultimedia>
         <respPossiveis>
@@ -12,7 +10,7 @@
         </respPossiveis> 
     </pergunta>
 	
-	<pergunta id="_02" tema="prog" duracao="60">
+	<pergunta duracao="60" id="_02" tema="prog">
         <texto>What does “program to interfaces, not implementations” mean?</texto>
         <anexoMultimedia/>
         <respPossiveis>
@@ -20,7 +18,7 @@
         </respPossiveis> 
     </pergunta>
 	
-	<pergunta id="_03" tema="prog" duracao="60">
+	<pergunta duracao="60" id="_03" tema="prog">
         <texto>What is the BASE Property Of A System?</texto>
         <anexoMultimedia>BASE.png</anexoMultimedia>
         <respPossiveis>
@@ -29,35 +27,44 @@
         </respPossiveis> 
     </pergunta>
 	
-	<pergunta id="_04" tema="prog" duracao="60">
+	<pergunta duracao="60" id="_04" tema="prog">
         <texto>What Is CAP Theorem?</texto>
-        <anexoMultimedia></anexoMultimedia>
+        <anexoMultimedia/>
         <respPossiveis>
             <resp>Consistency, Availability, Partition tolerance</resp>
         </respPossiveis> 
     </pergunta>
-	<pergunta id="_05" tema="prog" duracao="120">
+	<pergunta duracao="120" id="_05" tema="prog">
         <texto>Point out some differences between using, in Java, an ArrayList or a LinkedList.</texto>
-        <anexoMultimedia></anexoMultimedia>
+        <anexoMultimedia/>
         <respPossiveis/> 
     </pergunta>
 	
-	<pergunta id="_06" tema="prog" duracao="120">
+	<pergunta duracao="120" id="_06" tema="prog">
         <texto>What is Python?</texto>
-        <anexoMultimedia></anexoMultimedia>
+        <anexoMultimedia/>
         <respPossiveis>
             <resp>A high-level language that's both compiled and interpreted.</resp>
             <resp>A snake.</resp>
         </respPossiveis> 
     </pergunta>
 	
-	<pergunta id="_07" tema="prog" duracao="30">
+	<pergunta duracao="30" id="_07" tema="prog">
         <texto>What are main features of OOP?</texto>
-        <anexoMultimedia></anexoMultimedia>
+        <anexoMultimedia/>
         <respPossiveis>
             <resp>Encapsulation</resp>
             <resp>Inheritance</resp>
             <resp>Polymorphism</resp>
         </respPossiveis> 
     </pergunta>
+<pergunta duracao="20" id="_08" tema="basic"><texto>Quantos quadrados estao presentes na seguinte imagem?</texto><anexoMultimedia>squares.jpeg</anexoMultimedia><respPossiveis><resp>8</resp><resp>10</resp><resp>11</resp><resp>12</resp></respPossiveis></pergunta>
+
+
+
+
+
+
+
+
 </perguntas>

@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -45,6 +46,8 @@ public class Service implements Runnable{
 	String name = null;
 	boolean running = true;
 	Integer ID_SERVICE = null;
+	private static Map<Node, LinkedList<Node>> selecoes = new HashMap<Node, LinkedList<Node>>();
+
 
 	
 	public Service(Socket socket) {
@@ -61,6 +64,7 @@ public class Service implements Runnable{
 	public void run() {
 		setIdService();
 		try {
+			
 			os = new ObjectOutputStream(s.getOutputStream()); 
 			is = new ObjectInputStream(s.getInputStream()); 
 		} catch (IOException e1) {
@@ -75,8 +79,7 @@ public class Service implements Runnable{
 					root = readXML(inputLine);
 					System.out.println(root.getLocalName());
 					String choose = root.getLocalName();
-					rootDBitems = readXMLfromFile("perguntas.xml");
-					rootDBusers = readXMLfromFile("users.xml");
+					
 					switch(choose){
 					case "login": // LOGIN
 						rootDBusers = readXMLfromFile("users.xml");
@@ -103,21 +106,20 @@ public class Service implements Runnable{
 							atirar("User nao registado");
 						}
 						break;
-					case "adicionarPergunta": // GET 	
+					case "adicionarPergunta": 
 						System.out.println(this.userTipo);
-						if(this.userTipo != "prof" && this.userTipo != "admin") {
+						if(!this.userTipo.equals("prof") && !this.userTipo.equals("admin")) {
 							atirar("Não tem autorização para adicionar perguntas.");
 						}else {
 							rootDBitems = readXMLfromFile("perguntas.xml");
-							NodeList perguntas = rootDBitems.getChildNodes();
 							if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
 								NodeList inputPerguntas = root.getChildNodes();
 								for (int i = 0; i < inputPerguntas.getLength(); i++) {
-									System.out.println(inputPerguntas.item(i).getLocalName());
 									if(inputPerguntas.item(i).hasAttributes()) {
 										Element e = (Element) inputPerguntas.item(i);
 										e.setAttribute("id","_0"+(getlastPerguntaID()+1));
-										rootDBitems.appendChild(e);
+										Node imported = document.importNode(e, true);
+										rootDBitems.appendChild(imported);
 										outputXML(document,"perguntas.xml");
 									}
 								}
@@ -127,7 +129,64 @@ public class Service implements Runnable{
 						}
 						
 						break;
-					case "selecionarPergunta": // POST
+					case "selecionarPergunta": 
+						rootDBitems = readXMLfromFile("perguntas.xml");
+						rootDBusers = readXMLfromFile("users.xml");
+						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
+							String idPergunta = "_0"+root.getAttribute("index");
+							boolean todos = (root.getAttribute("todos").equals("true"))?true:false;
+							Element pergunta = null;
+							LinkedList<Node> alunos = new LinkedList<Node>();
+							
+							NodeList perguntas = rootDBitems.getChildNodes();
+							NodeList alunosDB = rootDBusers.getChildNodes();
+							for (int i = 0; i < perguntas.getLength(); i++) {
+								if(perguntas.item(i).hasAttributes()) {
+									Element e = (Element) perguntas.item(i);
+									String id = e.getAttribute("id");
+									if(id.equals(idPergunta)) {
+										//aqui encontramos o element que contem a pergunta a fazer
+										pergunta = (Element) e.cloneNode(true);
+									}
+								}
+							}
+							
+							if(!todos && root.hasChildNodes()) {
+								
+								NodeList alunosSelecionados = root.getChildNodes();
+								for (int j = 0; j < alunosSelecionados.getLength(); j++) {
+									for (int i = 0; i < alunosDB.getLength(); i++) {
+										if(alunosSelecionados.item(j).hasAttributes()) {
+											Element a = (Element) alunosSelecionados.item(j);
+											String numeroAluno = a.getAttribute("numero");
+											if(alunosDB.item(i).hasChildNodes()) {
+												Element e = (Element) alunosDB.item(i);
+												String numero = e.getElementsByTagName("numero").item(0).getTextContent();
+												if(numero.equals(numeroAluno)) {
+													//Elemento do aluno
+													alunos.add(e.cloneNode(true));
+												}
+											}
+										}
+											
+									}
+								}
+							}
+							if(todos) {
+								for (int i = 0; i < alunosDB.getLength(); i++) {
+									if(alunosDB.item(i).hasChildNodes()) {
+										Element e = (Element) alunosDB.item(i);
+										alunos.add(e);
+									}
+								}
+							}
+							if(pergunta != null && alunos != null) {
+								selecoes.put(pergunta.cloneNode(true), alunos);
+								atirar("pergunta processada");
+							}
+						}
+						break;
+					case "resposta": 
 						
 						break;
 					case "kill": // kill
@@ -142,6 +201,7 @@ public class Service implements Runnable{
 				}
 			} finally {
 				System.out.println("sai");
+				
 			}
 		} // end while
 	}
@@ -180,9 +240,9 @@ public class Service implements Runnable{
 	
 	void fecharCanal() {
 		try {
-			os.close(); 
-			is.close();
-			s.close();
+			if (is != null) is.close();  
+            if (os != null) os.close();
+            if (s != null) s.close(); 
 		}
 		catch (IOException e) { 
 			 e.printStackTrace(); 

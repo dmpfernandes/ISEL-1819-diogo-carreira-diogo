@@ -15,7 +15,7 @@ public class Server {
 	private boolean running = true;
 	private int port = 1571;
 	static ServerSocket server;
-	static Socket service;
+	Socket service;
 
 	public Server() {
 		
