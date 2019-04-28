@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class Service implements Runnable{
 	String name = null;
 	boolean running = true;
 	Integer ID_SERVICE = null;
-	private static Map<Node, LinkedList<Node>> selecoes = new HashMap<Node, LinkedList<Node>>();
+	private static Map<String, Node> selecoes = new HashMap<String, Node>();
 
 
 	
@@ -132,6 +134,8 @@ public class Service implements Runnable{
 					case "selecionarPergunta": 
 						rootDBitems = readXMLfromFile("perguntas.xml");
 						rootDBusers = readXMLfromFile("users.xml");
+						LocalDateTime now = LocalDateTime.now();
+						
 						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
 							String idPergunta = "_0"+root.getAttribute("index");
 							boolean todos = (root.getAttribute("todos").equals("true"))?true:false;
@@ -140,6 +144,8 @@ public class Service implements Runnable{
 							
 							NodeList perguntas = rootDBitems.getChildNodes();
 							NodeList alunosDB = rootDBusers.getChildNodes();
+							
+							
 							for (int i = 0; i < perguntas.getLength(); i++) {
 								if(perguntas.item(i).hasAttributes()) {
 									Element e = (Element) perguntas.item(i);
@@ -152,7 +158,6 @@ public class Service implements Runnable{
 							}
 							
 							if(!todos && root.hasChildNodes()) {
-								
 								NodeList alunosSelecionados = root.getChildNodes();
 								for (int j = 0; j < alunosSelecionados.getLength(); j++) {
 									for (int i = 0; i < alunosDB.getLength(); i++) {
@@ -181,7 +186,12 @@ public class Service implements Runnable{
 								}
 							}
 							if(pergunta != null && alunos != null) {
-								selecoes.put(pergunta.cloneNode(true), alunos);
+								String uniqueIndex = ID_SERVICE.toString()+now.toString();
+								Node p = pergunta.cloneNode(true);
+								for (int i = 0; i < alunos.size(); i++) {
+									p.appendChild(alunos.get(i));
+								}
+								selecoes.put(uniqueIndex, p);
 								atirar("pergunta processada");
 							}
 						}
