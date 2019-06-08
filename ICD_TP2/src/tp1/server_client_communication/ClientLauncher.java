@@ -3,7 +3,7 @@ package tp1.server_client_communication;
 import java.util.Scanner;
 
 public class ClientLauncher {
-	Client c;
+	ClienteUDP c;
 	Scanner sc;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -13,7 +13,7 @@ public class ClientLauncher {
 	}
 	
 	public ClientLauncher() {
-		c = new Client();
+		c = new ClienteUDP();
 	}
 	
 	public void run() {

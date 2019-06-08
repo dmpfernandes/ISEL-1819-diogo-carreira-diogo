@@ -7,6 +7,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -37,10 +40,11 @@ import org.xml.sax.InputSource;
 
 
 public class Service implements Runnable{
-	Socket s;
-	ObjectOutputStream os;
-	ObjectInputStream is;
-	Document document;
+    public final static int DIM_BUFFER  = 1000;
+
+	DatagramSocket s;
+	DatagramPacket inputPacket;
+	
 	Element root;
 	Element rootDBitems;
 	Element rootDBusers;
@@ -49,10 +53,12 @@ public class Service implements Runnable{
 	boolean running = true;
 	Integer ID_SERVICE = null;
 	private static Map<String, Node> selecoes = new HashMap<String, Node>();
-
+	
+	private static Map<Map<InetAddress, Integer>, String> login = new HashMap<Map<InetAddress, Integer>, String>();
 
 	
-	public Service(Socket socket) {
+	
+	public Service(DatagramSocket socket) {
 		this.s = socket;
 	}
 	
@@ -65,18 +71,14 @@ public class Service implements Runnable{
 	@Override
 	public void run() {
 		setIdService();
-		try {
-			
-			os = new ObjectOutputStream(s.getOutputStream()); 
-			is = new ObjectInputStream(s.getInputStream()); 
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
+		byte inputBuffer[]  = new byte[DIM_BUFFER];
+		inputPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
+		
 		while(running) {
 			try {				
 
 				String inputLine = apanhar();
+				System.out.println(inputLine);
 				if(inputLine != null && !inputLine.isEmpty()) {
 					root = readXML(inputLine);
 					System.out.println(root.getLocalName());
@@ -97,6 +99,9 @@ public class Service implements Runnable{
 									String numeroDBuser = e.getElementsByTagName("numero").item(0).getTextContent();
 									if(tipoDBuser.equals(tipo) && numeroDBuser.equals(numero)) {
 										this.userTipo = tipo;
+										Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
+										address.put(this.s.getInetAddress(), this.s.getPort());
+										login.put(address, numeroDBuser);
 										atirar("Autenticação Validada");
 										atirou = true;
 										break;
@@ -109,8 +114,9 @@ public class Service implements Runnable{
 						}
 						break;
 					case "adicionarPergunta": 
-						System.out.println(this.userTipo);
-						if(!this.userTipo.equals("prof") && !this.userTipo.equals("admin")) {
+
+						String ut = login.get(this.s.getInetAddress());
+						if(!ut.equals("prof") && !ut.equals("admin")) {
 							atirar("Não tem autorização para adicionar perguntas.");
 						}else {
 							rootDBitems = readXMLfromFile("perguntas.xml");
@@ -120,9 +126,9 @@ public class Service implements Runnable{
 									if(inputPerguntas.item(i).hasAttributes()) {
 										Element e = (Element) inputPerguntas.item(i);
 										e.setAttribute("id","_0"+(getlastPerguntaID()+1));
-										Node imported = document.importNode(e, true);
+										Node imported = rootDBitems.getOwnerDocument().importNode(e, true);
 										rootDBitems.appendChild(imported);
-										outputXML(document,"perguntas.xml");
+										outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml");
 									}
 								}
 								atirar("Pergunta/s adicionada/s com sucesso.");
@@ -139,11 +145,12 @@ public class Service implements Runnable{
 						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
 							String idPergunta = "_0"+root.getAttribute("index");
 							boolean todos = (root.getAttribute("todos").equals("true"))?true:false;
-							Element pergunta = null;
 							LinkedList<Node> alunos = new LinkedList<Node>();
 							
 							NodeList perguntas = rootDBitems.getChildNodes();
 							NodeList alunosDB = rootDBusers.getChildNodes();
+							String perguntaSelecionada="";
+							List<String> alunosSelecionadas = new LinkedList<String>();
 							
 							
 							for (int i = 0; i < perguntas.getLength(); i++) {
@@ -152,7 +159,12 @@ public class Service implements Runnable{
 									String id = e.getAttribute("id");
 									if(id.equals(idPergunta)) {
 										//aqui encontramos o element que contem a pergunta a fazer
-										pergunta = (Element) e.cloneNode(true);
+										try {
+											perguntaSelecionada = nodeToString(e.cloneNode(true));
+										} catch (TransformerException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}										 
 									}
 								}
 							}
@@ -167,9 +179,12 @@ public class Service implements Runnable{
 											if(alunosDB.item(i).hasChildNodes()) {
 												Element e = (Element) alunosDB.item(i);
 												String numero = e.getElementsByTagName("numero").item(0).getTextContent();
+												Element aluno = readXML("<aluno numero='" +numero + "'/>");
+												
+												
 												if(numero.equals(numeroAluno)) {
 													//Elemento do aluno
-													alunos.add(e.cloneNode(true));
+													alunos.add(aluno);
 												}
 											}
 										}
@@ -179,20 +194,31 @@ public class Service implements Runnable{
 							}
 							if(todos) {
 								for (int i = 0; i < alunosDB.getLength(); i++) {
+									
 									if(alunosDB.item(i).hasChildNodes()) {
 										Element e = (Element) alunosDB.item(i);
-										alunos.add(e);
+										Element aluno = readXML("<aluno numero='" +e.getElementsByTagName("numero").item(0).getTextContent() + "'/>");
+										alunos.add(aluno);
 									}
+									
 								}
 							}
-							if(pergunta != null && alunos != null) {
+							if(perguntaSelecionada != null && alunos != null) {
 								String uniqueIndex = ID_SERVICE.toString()+now.toString();
-								Node p = pergunta.cloneNode(true);
+								Element elem = readXML(perguntaSelecionada);
 								for (int i = 0; i < alunos.size(); i++) {
-									p.appendChild(alunos.get(i));
+									if (alunos.get(i).hasAttributes()) {
+										Node imported = elem.getOwnerDocument().importNode(alunos.get(i), true);
+										elem.appendChild(imported);
+									}
 								}
-								selecoes.put(uniqueIndex, p);
-								atirar("pergunta processada");
+								selecoes.put(uniqueIndex, elem.cloneNode(true));
+					
+								System.out.println();
+								atirar(nodeToString(elem.cloneNode(true)));
+								
+								
+								
 							}
 						}
 						break;
@@ -209,8 +235,13 @@ public class Service implements Runnable{
 					}
 					System.out.println();
 				}
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			} finally {
 				System.out.println("sai");
+				fecharCanal();
+				running = false;
 				
 			}
 		} // end while
@@ -221,42 +252,29 @@ public class Service implements Runnable{
 
 	void atirar(String out) {
 		try {
-			os.writeObject(out);
-		} catch (IOException e) {}
-	}
-	
-	void limpar() {
-		try {
-			os.reset();
-		} catch (IOException e) {}
+			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
+			          inputPacket.getAddress(), inputPacket.getPort());
+			System.out.println(new String(outputPacket.getData(), outputPacket.getOffset(), outputPacket.getLength()));
+			s.send(outputPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	String apanhar() {
-		String in = "";
-		try { in = (String) is.readObject(); }
-		catch (IOException e) {} catch (ClassNotFoundException e) {}
-		return in;
-	}
-		
-	boolean verificar(String msg, String robot) {
-		System.out.println("Client may connect: " + (!msg.contains(robot)));
-		if (!msg.contains(robot)) {
-			return true;
+		//return new String(inputPacket.getData(), 0, inputPacket.getLength()); // Ler tudo incluindo headers
+		try {
+			s.receive(inputPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else {
-			return false;
-		}
+		return new String(inputPacket.getData(), inputPacket.getOffset(), inputPacket.getLength());
 	}
 	
 	void fecharCanal() {
-		try {
-			if (is != null) is.close();  
-            if (os != null) os.close();
-            if (s != null) s.close(); 
-		}
-		catch (IOException e) { 
-			 e.printStackTrace(); 
-		}
+		if (s != null) s.close(); 
 	}
 	
 	public int getlastPerguntaID() {
@@ -299,7 +317,7 @@ public class Service implements Runnable{
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
-			document = builder.parse(path);
+			Document document = builder.parse(path);
 			return document.getDocumentElement();
 
 		} catch (Exception e) {
@@ -343,17 +361,17 @@ public class Service implements Runnable{
 			e.printStackTrace();
 		}
 	}
-//	
-//	private static String nodeToString(Node node)
-//			throws TransformerException
-//			{
-//			    StringWriter buf = new StringWriter();
-//			    Transformer xform = TransformerFactory.newInstance().newTransformer();
-//			    xform.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-//			    xform.transform(new DOMSource(node), new StreamResult(buf));
-//			    return(buf.toString());
-//			}
-//	
+	
+	private static String nodeToString(Node node)
+			throws TransformerException
+			{
+			    StringWriter buf = new StringWriter();
+			    Transformer xform = TransformerFactory.newInstance().newTransformer();
+			    xform.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+			    xform.transform(new DOMSource(node), new StreamResult(buf));
+			    return(buf.toString());
+			}
+	
 
 	
 }
