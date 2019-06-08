@@ -53,9 +53,9 @@
         <texto>What are main features of OOP?</texto>
         <anexoMultimedia/>
         <respPossiveis>
-            <resp>Encapsulation</resp>
-            <resp>Inheritance</resp>
-            <resp>Polymorphism</resp>
+            <resp validade="v" indexResp="0">Encapsulation</resp>
+            <resp validade="f" indexResp="1">Inheritance</resp>
+            <resp validade="f" indexResp="2">Polymorphism</resp>
         </respPossiveis> 
     </pergunta>
 </perguntas>
