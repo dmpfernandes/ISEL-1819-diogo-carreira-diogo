@@ -1,0 +1,19 @@
+#mensagem login
+<login numero="12345" tipo="prof"/>
+<login numero="12346" tipo="aluno"/>
+
+
+#mensagem adicionar pergunta
+<adicionarPergunta><pergunta  tema="basic" duracao="20"><texto>Quantos quadrados estao presentes na seguinte imagem?</texto><anexoMultimedia>squares.jpeg</anexoMultimedia><respPossiveis><resp>8</resp><resp>10</resp><resp>11</resp><resp>12</resp></respPossiveis></pergunta></adicionarPergunta>
+	
+
+
+#mensagem selecionar pergunta
+<selecionarPergunta index="3" todos="false"><aluno numero="12346"/></selecionarPergunta>
+<selecionarPergunta index="3" todos="true"/>
+
+
+
+#mensagem resposta
+<resposta numeroAluno="12346" indexPergunta="3" indexResposta="0"/>
+
