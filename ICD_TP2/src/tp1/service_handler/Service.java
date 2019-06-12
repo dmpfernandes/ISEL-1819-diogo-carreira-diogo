@@ -223,7 +223,27 @@ public class Service implements Runnable{
 						}
 						break;
 					case "resposta": 
+						//Recebo: <resposta numeroAluno="12346" indexPergunta="3" indexResposta="0"/>
+						String resultadoStr = "<resultado idxPergunta='";
+						String respStr = apanhar();
+						Element resp = readXML(respStr);
+						if(resp.hasChildNodes()) {
+							String numeroAluno = resp.getAttribute("numeroAluno");
+							String idxPergunta = resp.getAttribute("indexPergunta");
+							String idxResposta = resp.getAttribute("indexResposta");
+							Element pergunta = (Element)rootDBitems.getChildNodes().item(Integer.valueOf(idxPergunta));
+							Element resposta = (Element)pergunta.getElementsByTagName("resp").item(Integer.valueOf(idxResposta));
+							if(resposta.getAttribute("valid").equals("true")) {
+								resultadoStr += idxPergunta + "' sucesso='true' resp='" + idxResposta;
+							} else {
+								resultadoStr += idxPergunta + "' sucesso='false' resp='" + idxResposta;
+							}
+							atirar(resultadoStr);
+						}
 						
+						
+						
+						//Envio :<resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>
 						break;
 					case "kill": // kill
 						System.out.println("casekill");
@@ -247,7 +267,17 @@ public class Service implements Runnable{
 		} // end while
 	}
 	
-
+	void atirar(String out, InetAddress address, int port) {
+		try {
+			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
+			          address, port);
+			System.out.println(new String(outputPacket.getData(), outputPacket.getOffset(), outputPacket.getLength()));
+			s.send(outputPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 	void atirar(String out) {
