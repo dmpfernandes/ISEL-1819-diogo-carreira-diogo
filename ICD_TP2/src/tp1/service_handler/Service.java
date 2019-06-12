@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.Date;
@@ -106,7 +107,9 @@ public class Service implements Runnable{
 										address.put(inputPacket.getAddress(), inputPacket.getPort());
 										System.out.println("address --> "+numeroDBuser+"   "+inputPacket.getAddress()+":"+inputPacket.getPort());
 										login.put(numeroDBuser, address);
-										atirar("Autenticação Validada");
+										if (tipo.equals("prof")) {
+											atirar("<login success='true'/>");
+										}
 										atirou = true;
 										break;
 									}
@@ -157,7 +160,7 @@ public class Service implements Runnable{
 								}
 				            }
 				        }
-						atirar("Efetue registo para efectuar esta accao.");
+						
 						
 						
 						
@@ -203,13 +206,13 @@ public class Service implements Runnable{
 													if(alunosDB.item(i).hasChildNodes()) {
 														Element e = (Element) alunosDB.item(i);
 														String numero = e.getElementsByTagName("numero").item(0).getTextContent();
-														if(numero.equals(numeroAluno)) {
+														if(numero.equals(numeroAluno) || todos) {
 													        if(login.containsKey(numero)) {
 													        	Map<InetAddress, Integer> add = login.get(numero);  
 													        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
 													        		InetAddress path = entry1.getKey();
 													        		Integer port = entry1.getValue();
-													        	    atirar(perguntaSelecionada, path, port);
+													        	    atirar("<login group='230.0.0.1'/>", path, port,false);
 													        	    // do something with key and/or tab
 													        	}
 													        	
@@ -225,28 +228,33 @@ public class Service implements Runnable{
 										}
 									}
 									if(todos) {
-										atirar(perguntaSelecionada, InetAddress.getByName("230.0.0.1"), 4446);
+										for (int i = 0; i < alunosDB.getLength(); i++) {
+											if(alunosDB.item(i).hasChildNodes()) {
+												Element e = (Element) alunosDB.item(i);
+												String numero = e.getElementsByTagName("numero").item(0).getTextContent();
+												if(login.containsKey(numero)) {
+													Map<InetAddress, Integer> add = login.get(numero);  
+										        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
+										        		InetAddress path = entry1.getKey();
+										        		Integer port = entry1.getValue();
+										        		if(!port.equals(inputPacket.getPort())) {
+											        	    atirar("<login group='230.0.0.1'/>", path, port,false);
+											        	    // do something with key and/or tab
+										        		}
+										        	}
+												}
+											}
+										}
+										
 									}
-		//							if(perguntaSelecionada != null && alunos != null) {
-		//								Element elem = readXML(perguntaSelecionada);
-		//								for (int i = 0; i < alunos.size(); i++) {
-		//									if (alunos.get(i).hasAttributes()) {
-		//										Node imported = elem.getOwnerDocument().importNode(alunos.get(i), true);
-		//										elem.appendChild(imported);
-		//									}
-		//								}
-		//								selecoes.put(uniqueIndex, elem.cloneNode(true));
-		//					
-		//								System.out.println();
-		//								atirar(nodeToString(elem.cloneNode(true)));
-		//								
-		//								
-		//								
-		//							}
+									atirar("<pergunta index="+idPergunta+">Pergunta Selecionada com Sucesso</pergunta>");
+									atirar(perguntaSelecionada, InetAddress.getByName("230.0.0.1"), 4446,true);
+									
+								
 								}
 				            }
 						}
-						atirar("Efetue registo para efectuar esta accao.");
+						
 						break;
 					case "resposta": 
 						
@@ -273,20 +281,24 @@ public class Service implements Runnable{
 		} // end while
 	}
 	
-	void atirar(String out ,InetAddress address, Integer port) {
+	void atirar(String out ,InetAddress address, Integer port, boolean multi) {
 		try {
+			if(multi) {
+				Thread.sleep(5000);
+			}
 			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
-			          inputPacket.getAddress(), inputPacket.getPort());
+			          address, port);
 			System.out.println(new String(outputPacket.getData(), outputPacket.getOffset(), outputPacket.getLength()));
+			System.out.println(address+":"+port);
 			s.send(outputPacket);
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
  
 	void atirar(String out ) {
-		atirar(out, inputPacket.getAddress(), inputPacket.getPort());
+		atirar(out, inputPacket.getAddress(), inputPacket.getPort(), false);
 	}
 	
 	String apanhar() {

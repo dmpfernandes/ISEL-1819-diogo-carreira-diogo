@@ -24,8 +24,7 @@ public class ClienteUDP {
         try { 
         	
         	socketmulti = new MulticastSocket(4446);
-        	InetAddress group = InetAddress.getByName("230.0.0.1");
-        	socketmulti.joinGroup(group);
+        	
         	
             // Obt�m endere�o do servidor 
             hostAddress = InetAddress.getByName(host);
@@ -53,8 +52,28 @@ public class ClienteUDP {
 		try {
 			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
 					hostAddress, port);
-			socket.setSoTimeout(60000);
+			//socket.setSoTimeout(60000);
 			socket.send(outputPacket);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void joinGroup(String address) {
+		try {
+			InetAddress group = InetAddress.getByName(address);//"230.0.0.1"
+			socketmulti.joinGroup(group);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void leaveGroup(String address) {
+		try {
+			InetAddress group = InetAddress.getByName(address);//"230.0.0.1"
+			socketmulti.leaveGroup(group);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

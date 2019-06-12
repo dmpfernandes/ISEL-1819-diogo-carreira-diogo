@@ -1,7 +1,7 @@
 #mensagem login
 <login numero="12345" tipo="prof"/>
 <login numero="12346" tipo="aluno"/>
-
+<login numero="12347" tipo="aluno"/>
 
 #mensagem adicionar pergunta
 <adicionarPergunta><pergunta  tema="basic" duracao="20"><texto>Quantos quadrados estao presentes na seguinte imagem?</texto><anexoMultimedia>squares.jpeg</anexoMultimedia><respPossiveis><resp>8</resp><resp>10</resp><resp>11</resp><resp>12</resp></respPossiveis></pergunta></adicionarPergunta>

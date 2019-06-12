@@ -1,7 +1,9 @@
 package tp1.server_client_communication;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 
 import tp1.service_handler.Service;
@@ -56,6 +58,7 @@ public class ServidorUDP {
 //                        messageStr = "@" + messageStr.toUpperCase();
 //                        DatagramPacket outputPacket = new DatagramPacket(messageStr.getBytes(), messageStr.length(), 
 //                                inputPacket.getAddress(), inputPacket.getPort());
+                        
                         socketUDP = new DatagramSocket(port);
                         service = new Service(socketUDP);
             			service.run();
@@ -68,7 +71,7 @@ public class ServidorUDP {
 //                    }
             } // end for
         } 
-        catch (SocketException e) {
+        catch (IOException e) {
             System.err.println("Erro na criacao do socket: " + e.getMessage());
         }
     }

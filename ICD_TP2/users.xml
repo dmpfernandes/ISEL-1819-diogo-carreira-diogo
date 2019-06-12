@@ -8,7 +8,11 @@
 		<nome>bbbb</nome>
         <numero>12346</numero>
 	</user>
-	<user uid="2" tipo="admin" dataNascimento="28-04-2019">
+	<user uid="2" tipo="aluno" dataNascimento="01-01-2000">
+		<nome>cccc</nome>
+        <numero>12347</numero>
+	</user>
+	<user uid="3" tipo="admin" dataNascimento="28-04-2019">
 		<nome>admin</nome>
         <numero>00000</numero>
 	</user>
