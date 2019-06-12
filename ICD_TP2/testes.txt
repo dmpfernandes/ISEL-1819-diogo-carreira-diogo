@@ -17,3 +17,6 @@
 #mensagem resposta
 <resposta numeroAluno="12346" indexPergunta="3" indexResposta="0"/>
 
+#mensagem resultado
+<resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>
+
