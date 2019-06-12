@@ -9,13 +9,13 @@
 
 
 #mensagem selecionar pergunta
-<selecionarPergunta index="3" todos="false"><aluno numero="12346"/></selecionarPergunta>
+<selecionarPergunta index="5" todos="false"><aluno numero="12346"/></selecionarPergunta>
 <selecionarPergunta index="3" todos="true"/>
 
 
 
 #mensagem resposta
-<resposta numeroAluno="12346" indexPergunta="3" indexResposta="0"/>
+<resposta numeroAluno="12346" indexPergunta="5" indexResposta="0"/>
 
 #mensagem resultado
 <resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>

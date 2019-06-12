@@ -187,7 +187,7 @@ public class Service implements Runnable{
 											String id = e.getAttribute("id");
 											if(id.equals(idPergunta)) {
 												//aqui encontramos o element que contem a pergunta a fazer
-												perguntaSelecionada = nodeToString(e.cloneNode(true));
+												perguntaSelecionada = nodeToString(e.cloneNode(true)).split("<respPossiveis>")[0]+" </pergunta>";
 											 
 											}
 										}
@@ -259,20 +259,39 @@ public class Service implements Runnable{
 					case "resposta": 
 						//Recebo: <resposta numeroAluno="12346" indexPergunta="3" indexResposta="0"/>
 						String resultadoStr = "<resultado idxPergunta='";
-						String respStr = apanhar();
-						Element resp = readXML(respStr);
-						if(resp.hasChildNodes()) {
-							String numeroAluno = resp.getAttribute("numeroAluno");
-							String idxPergunta = resp.getAttribute("indexPergunta");
-							String idxResposta = resp.getAttribute("indexResposta");
-							Element pergunta = (Element)rootDBitems.getChildNodes().item(Integer.valueOf(idxPergunta));
-							Element resposta = (Element)pergunta.getElementsByTagName("resp").item(Integer.valueOf(idxResposta));
-							if(resposta.getAttribute("valid").equals("true")) {
-								resultadoStr += idxPergunta + "' sucesso='true' resp='" + idxResposta;
-							} else {
-								resultadoStr += idxPergunta + "' sucesso='false' resp='" + idxResposta;
+						
+						
+						if(root.hasAttributes()) {
+							NodeList perguntas = rootDBitems.getChildNodes();
+							String numeroAluno = root.getAttribute("numeroAluno");
+							String idPergunta = "_0"+root.getAttribute("indexPergunta");
+							String idxResposta = root.getAttribute("indexResposta");
+							Element perguntaSelecionada = null;
+							for (int i = 0; i < perguntas.getLength(); i++) {
+								if(perguntas.item(i).hasAttributes()) {
+									Element e = (Element) perguntas.item(i);
+									String id = e.getAttribute("id");
+									if(id.equals(idPergunta)) {
+										//aqui encontramos o element que contem a pergunta a fazer
+										perguntaSelecionada = e;
+										
+									 
+									}
+								}
 							}
-							atirar(resultadoStr);
+							NodeList resps = perguntaSelecionada.getElementsByTagName("resp");
+							for (int i = 0; i < resps.getLength(); i++) {
+								Element e = (Element) resps.item(i);
+								if(e.hasAttribute("resid")) {
+									if(e.getAttribute("resid").equals(idxResposta)) {
+										String valid = e.getAttribute("valid");
+										atirar("<resultado idxPergunta='"+idPergunta + "' sucesso='"+valid+"' resp='" + idxResposta+" />");
+
+									}
+									
+								}
+							}
+
 						}
 						
 						

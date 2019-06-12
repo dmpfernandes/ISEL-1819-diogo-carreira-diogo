@@ -38,8 +38,8 @@
         <texto>Is a constructor required in order to create a class?</texto>
         <anexoMultimedia/>
         <respPossiveis>
-        	<resp valid="true">No</resp>
-        	<resp valid="false">Yes</resp>
+        	<resp resid="0" valid="true">No</resp>
+        	<resp resid="1" valid="false">Yes</resp>
         </respPossiveis> 
     </pergunta>
 	
@@ -47,9 +47,9 @@
         <texto>What is Python?</texto>
         <anexoMultimedia/>
         <respPossiveis>
-            <resp valid="true">A high-level language that's both compiled and interpreted.</resp>
-            <resp valid="true">A snake.</resp>
-            <resp valid="false">Hello World!</resp>
+            <resp resid="0" valid="true">A high-level language that's both compiled and interpreted.</resp>
+            <resp resid="1" valid="true">A snake.</resp>
+            <resp resid="2" valid="false">Hello World!</resp>
         </respPossiveis> 
     </pergunta>
 	
