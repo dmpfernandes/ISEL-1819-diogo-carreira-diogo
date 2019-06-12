@@ -44,8 +44,9 @@
         <texto>What is Python?</texto>
         <anexoMultimedia/>
         <respPossiveis>
-            <resp>A high-level language that's both compiled and interpreted.</resp>
-            <resp>A snake.</resp>
+            <resp valid="true">A high-level language that's both compiled and interpreted.</resp>
+            <resp valid="true">A snake.</resp>
+            <resp valid="false">Hello World!</resp>
         </respPossiveis> 
     </pergunta>
 	
@@ -53,9 +54,9 @@
         <texto>What are main features of OOP?</texto>
         <anexoMultimedia/>
         <respPossiveis>
-            <resp>Encapsulation</resp>
-            <resp>Inheritance</resp>
-            <resp>Polymorphism</resp>
+            <resp valid="true">Encapsulation</resp>
+            <resp valid="false">Inheritance</resp>
+            <resp valid="false">Polymorphism</resp>
         </respPossiveis> 
     </pergunta>
 </perguntas>
