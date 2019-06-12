@@ -18,12 +18,16 @@ public class ClientLauncher {
 	
 	public void run() {
 		while(true) {
+			
+			
 			System.out.println("Que desejas");
 			sc = new Scanner(System.in);
-			String pedido = sc.nextLine();
-			c.atirar(pedido);
-			System.out.println("resposta :\n" + c.apanhar());
-			
+			if(sc.hasNext()) {
+				String pedido = sc.nextLine();
+				c.atirar(pedido);
+			}
+			System.out.println("recebido: " + c.apanhar());
+			System.out.println("recebido em multi: " + c.apanharMulti());
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {

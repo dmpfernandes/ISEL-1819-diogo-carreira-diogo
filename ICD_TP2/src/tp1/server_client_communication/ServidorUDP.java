@@ -1,9 +1,7 @@
 package tp1.server_client_communication;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Socket;
 import java.net.SocketException;
 
 import tp1.service_handler.Service;
@@ -35,6 +33,7 @@ public class ServidorUDP {
 //            socketUDP = new DatagramSocket(port);
 
             // Cria um datagramaPacket para recep��o
+        	
             byte inputBuffer[]  = new byte[DIM_BUFFER];
             DatagramPacket inputPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
 

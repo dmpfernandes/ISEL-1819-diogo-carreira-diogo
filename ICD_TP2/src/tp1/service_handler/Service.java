@@ -11,12 +11,14 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,7 +56,7 @@ public class Service implements Runnable{
 	Integer ID_SERVICE = null;
 	private static Map<String, Node> selecoes = new HashMap<String, Node>();
 	
-	private static Map<Map<InetAddress, Integer>, String> login = new HashMap<Map<InetAddress, Integer>, String>();
+	private static Map<String,Map<InetAddress, Integer>> login = new HashMap<String,Map<InetAddress, Integer>>();
 
 	
 	
@@ -87,9 +89,10 @@ public class Service implements Runnable{
 					switch(choose){
 					case "login": // LOGIN
 						rootDBusers = readXMLfromFile("users.xml");
-						NodeList users = rootDBusers.getChildNodes();
+						
 						boolean atirou=false;
 						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
+							NodeList users = rootDBusers.getChildNodes();
 							String numero = root.getAttribute("numero");
 							String tipo = root.getAttribute("tipo");
 							for (int i = 1; i < users.getLength(); i++) {
@@ -100,8 +103,9 @@ public class Service implements Runnable{
 									if(tipoDBuser.equals(tipo) && numeroDBuser.equals(numero)) {
 										this.userTipo = tipo;
 										Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
-										address.put(this.s.getInetAddress(), this.s.getPort());
-										login.put(address, numeroDBuser);
+										address.put(inputPacket.getAddress(), inputPacket.getPort());
+										System.out.println("address --> "+numeroDBuser+"   "+inputPacket.getAddress()+":"+inputPacket.getPort());
+										login.put(numeroDBuser, address);
 										atirar("Autenticação Validada");
 										atirou = true;
 										break;
@@ -114,113 +118,135 @@ public class Service implements Runnable{
 						}
 						break;
 					case "adicionarPergunta": 
-
-						String ut = login.get(this.s.getInetAddress());
-						if(!ut.equals("prof") && !ut.equals("admin")) {
-							atirar("Não tem autorização para adicionar perguntas.");
-						}else {
-							rootDBitems = readXMLfromFile("perguntas.xml");
-							if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
-								NodeList inputPerguntas = root.getChildNodes();
-								for (int i = 0; i < inputPerguntas.getLength(); i++) {
-									if(inputPerguntas.item(i).hasAttributes()) {
-										Element e = (Element) inputPerguntas.item(i);
-										e.setAttribute("id","_0"+(getlastPerguntaID()+1));
-										Node imported = rootDBitems.getOwnerDocument().importNode(e, true);
-										rootDBitems.appendChild(imported);
-										outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml");
+						rootDBusers = readXMLfromFile("users.xml");
+						NodeList users = rootDBusers.getChildNodes();
+						
+						
+						for (Entry<String, Map<InetAddress, Integer>> entry : login.entrySet()) {
+							Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
+							address.put(inputPacket.getAddress(), inputPacket.getPort());
+				            if (entry.getValue().equals(address)) {
+				                String numero = entry.getKey();
+				                for (int i = 1; i < users.getLength(); i++) {
+									if(users.item(i).hasAttributes()) {
+										String tipoDBuser = users.item(i).getAttributes().getNamedItem("tipo").getTextContent();
+										Element e = (Element) users.item(i);
+										String numeroDBuser = e.getElementsByTagName("numero").item(0).getTextContent();
+										if(numeroDBuser.equals(numero)) {
+											if(!tipoDBuser.equals("prof") && !tipoDBuser.equals("admin")) {
+												atirar("Não tem autorização para adicionar perguntas.");
+											}else {
+												rootDBitems = readXMLfromFile("perguntas.xml");
+												if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
+													NodeList inputPerguntas = root.getChildNodes();
+													for (int p = 0; p < inputPerguntas.getLength(); p++) {
+														if(inputPerguntas.item(p).hasAttributes()) {
+															Element ep = (Element) inputPerguntas.item(p);
+															ep.setAttribute("id","_0"+(getlastPerguntaID()+1));
+															Node imported = rootDBitems.getOwnerDocument().importNode(ep, true);
+															rootDBitems.appendChild(imported);
+															outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml");
+														}
+													}
+													atirar("Pergunta/s adicionada/s com sucesso.");
+													
+												}
+											}
+										}
 									}
 								}
-								atirar("Pergunta/s adicionada/s com sucesso.");
-								
-							}
-						}
+				            }
+				        }
+						atirar("Efetue registo para efectuar esta accao.");
+						
+						
 						
 						break;
 					case "selecionarPergunta": 
 						rootDBitems = readXMLfromFile("perguntas.xml");
 						rootDBusers = readXMLfromFile("users.xml");
-						LocalDateTime now = LocalDateTime.now();
-						
-						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
-							String idPergunta = "_0"+root.getAttribute("index");
-							boolean todos = (root.getAttribute("todos").equals("true"))?true:false;
-							LinkedList<Node> alunos = new LinkedList<Node>();
-							
-							NodeList perguntas = rootDBitems.getChildNodes();
-							NodeList alunosDB = rootDBusers.getChildNodes();
-							String perguntaSelecionada="";
-							List<String> alunosSelecionadas = new LinkedList<String>();
-							
-							
-							for (int i = 0; i < perguntas.getLength(); i++) {
-								if(perguntas.item(i).hasAttributes()) {
-									Element e = (Element) perguntas.item(i);
-									String id = e.getAttribute("id");
-									if(id.equals(idPergunta)) {
-										//aqui encontramos o element que contem a pergunta a fazer
-										try {
-											perguntaSelecionada = nodeToString(e.cloneNode(true));
-										} catch (TransformerException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}										 
-									}
-								}
-							}
-							
-							if(!todos && root.hasChildNodes()) {
-								NodeList alunosSelecionados = root.getChildNodes();
-								for (int j = 0; j < alunosSelecionados.getLength(); j++) {
-									for (int i = 0; i < alunosDB.getLength(); i++) {
-										if(alunosSelecionados.item(j).hasAttributes()) {
-											Element a = (Element) alunosSelecionados.item(j);
-											String numeroAluno = a.getAttribute("numero");
-											if(alunosDB.item(i).hasChildNodes()) {
-												Element e = (Element) alunosDB.item(i);
-												String numero = e.getElementsByTagName("numero").item(0).getTextContent();
-												Element aluno = readXML("<aluno numero='" +numero + "'/>");
-												
-												
-												if(numero.equals(numeroAluno)) {
-													//Elemento do aluno
-													alunos.add(aluno);
-												}
+						for (Entry<String, Map<InetAddress, Integer>> entry : login.entrySet()) {
+							Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
+							address.put(inputPacket.getAddress(), inputPacket.getPort());
+				            if (entry.getValue().equals(address)) {
+								if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
+									String idPergunta = "_0"+root.getAttribute("index");
+									System.out.println("idPergunta: "+idPergunta);
+									boolean todos = (root.getAttribute("todos").equals("true"))?true:false;
+									
+									NodeList perguntas = rootDBitems.getChildNodes();
+									NodeList alunosDB = rootDBusers.getChildNodes();
+									String perguntaSelecionada="";							
+									
+									for (int i = 0; i < perguntas.getLength(); i++) {
+										if(perguntas.item(i).hasAttributes()) {
+											Element e = (Element) perguntas.item(i);
+											String id = e.getAttribute("id");
+											if(id.equals(idPergunta)) {
+												//aqui encontramos o element que contem a pergunta a fazer
+												perguntaSelecionada = nodeToString(e.cloneNode(true));
+											 
 											}
 										}
-											
 									}
-								}
-							}
-							if(todos) {
-								for (int i = 0; i < alunosDB.getLength(); i++) {
+									if(perguntaSelecionada.isEmpty()) {
+							        	atirar("id da pergunta selecionada ("+idPergunta+") nao registado");
+							        }
 									
-									if(alunosDB.item(i).hasChildNodes()) {
-										Element e = (Element) alunosDB.item(i);
-										Element aluno = readXML("<aluno numero='" +e.getElementsByTagName("numero").item(0).getTextContent() + "'/>");
-										alunos.add(aluno);
+									if(!todos && root.hasChildNodes()) {
+										NodeList alunosSelecionados = root.getChildNodes();
+										for (int j = 0; j < alunosSelecionados.getLength(); j++) {
+											for (int i = 0; i < alunosDB.getLength(); i++) {
+												if(alunosSelecionados.item(j).hasAttributes()) {
+													Element a = (Element) alunosSelecionados.item(j);
+													String numeroAluno = a.getAttribute("numero");
+													if(alunosDB.item(i).hasChildNodes()) {
+														Element e = (Element) alunosDB.item(i);
+														String numero = e.getElementsByTagName("numero").item(0).getTextContent();
+														if(numero.equals(numeroAluno)) {
+													        if(login.containsKey(numero)) {
+													        	Map<InetAddress, Integer> add = login.get(numero);  
+													        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
+													        		InetAddress path = entry1.getKey();
+													        		Integer port = entry1.getValue();
+													        	    atirar(perguntaSelecionada, path, port);
+													        	    // do something with key and/or tab
+													        	}
+													        	
+													        }
+													        
+												        
+														}
+													
+													}
+												}
+													
+											}
+										}
 									}
-									
-								}
-							}
-							if(perguntaSelecionada != null && alunos != null) {
-								String uniqueIndex = ID_SERVICE.toString()+now.toString();
-								Element elem = readXML(perguntaSelecionada);
-								for (int i = 0; i < alunos.size(); i++) {
-									if (alunos.get(i).hasAttributes()) {
-										Node imported = elem.getOwnerDocument().importNode(alunos.get(i), true);
-										elem.appendChild(imported);
+									if(todos) {
+										atirar(perguntaSelecionada, InetAddress.getByName("230.0.0.1"), 4446);
 									}
+		//							if(perguntaSelecionada != null && alunos != null) {
+		//								Element elem = readXML(perguntaSelecionada);
+		//								for (int i = 0; i < alunos.size(); i++) {
+		//									if (alunos.get(i).hasAttributes()) {
+		//										Node imported = elem.getOwnerDocument().importNode(alunos.get(i), true);
+		//										elem.appendChild(imported);
+		//									}
+		//								}
+		//								selecoes.put(uniqueIndex, elem.cloneNode(true));
+		//					
+		//								System.out.println();
+		//								atirar(nodeToString(elem.cloneNode(true)));
+		//								
+		//								
+		//								
+		//							}
 								}
-								selecoes.put(uniqueIndex, elem.cloneNode(true));
-					
-								System.out.println();
-								atirar(nodeToString(elem.cloneNode(true)));
-								
-								
-								
-							}
+				            }
 						}
+						atirar("Efetue registo para efectuar esta accao.");
 						break;
 					case "resposta": 
 						
@@ -235,22 +261,19 @@ public class Service implements Runnable{
 					}
 					System.out.println();
 				}
-			} catch (TransformerException e) {
+			} catch (TransformerException | UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
 				System.out.println("sai");
-				fecharCanal();
-				running = false;
+//				fecharCanal();
+//				running = false;
 				
 			}
 		} // end while
 	}
 	
-
-
-
-	void atirar(String out) {
+	void atirar(String out ,InetAddress address, Integer port) {
 		try {
 			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
 			          inputPacket.getAddress(), inputPacket.getPort());
@@ -260,6 +283,10 @@ public class Service implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+ 
+	void atirar(String out ) {
+		atirar(out, inputPacket.getAddress(), inputPacket.getPort());
 	}
 	
 	String apanhar() {
@@ -327,19 +354,6 @@ public class Service implements Runnable{
 		return null;
 	}
 	
-//	public String getAllItems() {
-//		NodeList items = rootDB.getElementsByTagName("item");
-//		String aux = "";
-//		for(int x=0,size= items.getLength(); x<size; x++) {
-//			try {
-//				aux += nodeToString(items.item(x)) + "\n";
-//			} catch (TransformerException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return aux;
-//	}
 	
 	
 	
