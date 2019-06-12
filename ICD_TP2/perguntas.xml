@@ -35,9 +35,12 @@
         </respPossiveis> 
     </pergunta>
 	<pergunta duracao="120" id="_05" tema="prog">
-        <texto>Point out some differences between using, in Java, an ArrayList or a LinkedList.</texto>
+        <texto>Is a constructor required in order to create a class?</texto>
         <anexoMultimedia/>
-        <respPossiveis/> 
+        <respPossiveis>
+        	<resp valid="true">No</resp>
+        	<resp valid="false">Yes</resp>
+        </respPossiveis> 
     </pergunta>
 	
 	<pergunta duracao="120" id="_06" tema="prog">
