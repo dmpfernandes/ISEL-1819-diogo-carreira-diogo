@@ -1,0 +1,11 @@
+<!ELEMENT users ( user+ ) >
+
+<!ELEMENT password ( #PCDATA ) >
+
+<!ELEMENT user ( nome, numero ) >
+<!ATTLIST user tipo NMTOKEN #REQUIRED >
+<!ATTLIST user uid NMTOKEN #REQUIRED >
+<!ATTLIST user dataNascimento NMTOKEN #REQUIRED >
+
+<!ELEMENT nome (#PCDATA)>
+<!ELEMENT numero (#PCDATA)>

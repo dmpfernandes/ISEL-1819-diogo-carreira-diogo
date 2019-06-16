@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><perguntas>
+    <pergunta duracao="20" id="_01" tema="basic">
+        <texto>Quantos quadrados estao presentes na seguinte imagem?</texto>
+        <anexoMultimedia>squares.jpeg</anexoMultimedia>
+        <respPossiveis>
+            <resp>8</resp>
+            <resp>10</resp>
+            <resp>11</resp>
+            <resp>12</resp>
+        </respPossiveis> 
+    </pergunta>
+	
+	<pergunta duracao="60" id="_02" tema="prog">
+        <texto>What does “program to interfaces, not implementations” mean?</texto>
+        <anexoMultimedia/>
+        <respPossiveis>
+            <resp>Coding against interface means, the client code always holds an Interface object which is supplied by a factory.</resp>
+        </respPossiveis> 
+    </pergunta>
+	
+	<pergunta duracao="60" id="_03" tema="prog">
+        <texto>What is the BASE Property Of A System?</texto>
+        <anexoMultimedia>BASE.png</anexoMultimedia>
+        <respPossiveis>
+            <resp>Basically available, Soft state, Eventual consistency</resp>
+			<resp>Always available, Maleable, Consistent</resp>
+        </respPossiveis> 
+    </pergunta>
+	
+	<pergunta duracao="60" id="_04" tema="prog">
+        <texto>What Is CAP Theorem?</texto>
+        <anexoMultimedia/>
+        <respPossiveis>
+            <resp>Consistency, Availability, Partition tolerance</resp>
+        </respPossiveis> 
+    </pergunta>
+	<pergunta duracao="120" id="_05" tema="prog">
+        <texto>Is a constructor required in order to create a class?</texto>
+        <anexoMultimedia/>
+        <respPossiveis>
+        	<resp resid="0" valid="true">No</resp>
+        	<resp resid="1" valid="false">Yes</resp>
+        </respPossiveis> 
+    </pergunta>
+	
+	<pergunta duracao="120" id="_06" tema="prog">
+        <texto>What is Python?</texto>
+        <anexoMultimedia/>
+        <respPossiveis>
+            <resp resid="0" valid="true">A high-level language that's both compiled and interpreted.</resp>
+            <resp resid="1" valid="true">A snake.</resp>
+            <resp resid="2" valid="false">Hello World!</resp>
+        </respPossiveis> 
+    </pergunta>
+	
+	<pergunta duracao="30" id="_07" tema="prog">
+        <texto>What are main features of OOP?</texto>
+        <anexoMultimedia/>
+        <respPossiveis>
+            <resp valid="true">Encapsulation</resp>
+            <resp valid="false">Inheritance</resp>
+            <resp valid="false">Polymorphism</resp>
+        </respPossiveis> 
+    </pergunta>
+
+
+
+<pergunta duracao="20" id="_08" tema="basic"><texto>Quantos quadrados estao presentes na seguinte imagem?</texto><anexoMultimedia>squares.jpeg</anexoMultimedia><respPossiveis><resp>8</resp><resp>10</resp><resp>11</resp><resp>12</resp></respPossiveis></pergunta></perguntas>
