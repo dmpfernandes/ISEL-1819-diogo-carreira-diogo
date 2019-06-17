@@ -11,7 +11,8 @@
 	<form id="login" action="LoginServlet" method="post">
 		<p>Numero: <input type="text" name="numero"></p>
 		
-		<p>Professor <input type="checkbox" name="prof"></p>
+		<p>Professor <input type="checkbox" value="true" name="prof"></p>
+		<input type='hidden' value='false' name='prof'>
 		
 		<p><input type="submit" name="submit"></p>
 		 

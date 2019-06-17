@@ -7,12 +7,15 @@
 <title>Menu Escolha</title>
 </head>
 <body>
+	<h1>Menu Escolha</h1>
 	
-	<p><a href="adicionarPergunta.jsp" id="addPergunta"></a></p>
+	<p><a href="adicionarPergunta.jsp" id="addPergunta">Adicionar Pergunta</a></p>
 	
-	<p><a href="perguntar.jsp" id="perguntar"></a></p>
+	<p><a href="listaPerguntas.jsp" id="listar">Listar Perguntas</a></p>
 	
-	<p><a href="listaPerguntas.jsp" id="listar"></a></p>
+	<p><a href="perguntar.jsp" id="perguntar">Selecionar Pergunta</a></p>
+	
+	
 	
 </body>
 </html>
