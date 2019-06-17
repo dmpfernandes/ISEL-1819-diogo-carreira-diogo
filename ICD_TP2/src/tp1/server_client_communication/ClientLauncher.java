@@ -14,6 +14,7 @@ import org.xml.sax.InputSource;
 
 public class ClientLauncher {
 	ClienteUDP c;
+	ClienteUDP cmulti;
 	Scanner sc;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -24,6 +25,7 @@ public class ClientLauncher {
 	
 	public ClientLauncher() {
 		c = new ClienteUDP();
+		cmulti = new ClienteUDP();
 	}
 	
 	public void run() {
@@ -41,10 +43,10 @@ public class ClientLauncher {
 				if(resposta.contains("group")) {
 					Element e = readXML(resposta);
 					String group = e.getAttribute("group");
-					c.joinGroup(group);
+					cmulti.joinGroup(group);
 					System.out.println("joinGroup ("+group+") successfully");
-					System.out.println("recebido em multi: " + c.apanharMulti());
-					c.leaveGroup(group);
+					System.out.println("recebido em multi: " + cmulti.apanharMulti());
+					cmulti.leaveGroup(group);
 				}
 				
 			}

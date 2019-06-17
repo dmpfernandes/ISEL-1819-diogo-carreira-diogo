@@ -60,6 +60,9 @@ public class LoginServlet extends HttpServlet {
 	        	if(session.getAttribute("groupID")!=null)
 					session.setAttribute("groupID", null);
 	        	session.setAttribute("groupID", groupID);
+	        	cliente.joinGroup(groupID);
+	        	String respostaMulti = cliente.apanharMulti();
+	        	session.setAttribute("pergunta", respostaMulti);
 	            userPermit="aluno";
 	            ok = true;
 	        }

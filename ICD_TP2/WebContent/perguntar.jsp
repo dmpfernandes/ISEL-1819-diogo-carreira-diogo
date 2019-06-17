@@ -4,9 +4,23 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Selecionar Pergunta</title>
 </head>
 <body>
+	<h1>Selecionar Perguntar</h1>
+	
+	<form id="login" action="PerguntarServlet" method="post">
+		<p>Indique o id da pergunta a selecionar: <input type="text" name="idPergunta"></p>
+		
+		<p><input type="checkbox" name="Todos" value="true"></p>
+		
+		<p>Indique o/s nº de aluno/s a selecionar (separados por ","): <input type="text" name="alunosSelecionados"></p>
+		
+		<p><input type="submit" name="submit"></p>
+	</form>
+	
+	
+	
 	
 </body>
 </html>

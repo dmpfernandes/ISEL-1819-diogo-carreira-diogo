@@ -1,2 +1,6 @@
 
 ICD_TP2/build/
+
+*.class
+
+ICD_TP2/WebContent/META-INF/

@@ -187,13 +187,13 @@ public class Service implements Runnable{
 											String id = e.getAttribute("id");
 											if(id.equals(idPergunta)) {
 												//aqui encontramos o element que contem a pergunta a fazer
-												perguntaSelecionada = nodeToString(e.cloneNode(true)).split("<respPossiveis>")[0]+" </pergunta>";
+												perguntaSelecionada = nodeToString(e.cloneNode(true));
 											 
 											}
 										}
 									}
 									if(perguntaSelecionada.isEmpty()) {
-							        	atirar("id da pergunta selecionada ("+idPergunta+") nao registado");
+							        	atirar("<pergunta index="+idPergunta+" status='failure'/>");
 							        }
 									
 									if(!todos && root.hasChildNodes()) {
@@ -247,7 +247,7 @@ public class Service implements Runnable{
 										}
 										
 									}
-									atirar("<pergunta index="+idPergunta+">Pergunta Selecionada com Sucesso</pergunta>");
+									atirar("<pergunta index="+idPergunta+" status='success'/>");
 									atirar(perguntaSelecionada, InetAddress.getByName("230.0.0.1"), 4446,true);
 									
 								
