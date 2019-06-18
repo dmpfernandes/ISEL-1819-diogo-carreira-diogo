@@ -54,12 +54,12 @@
 		</form>
 
 		<p>
-			Restam <span id="countdowntimer"><%=timer = 10%> </span> Segundos para
+			Restam <span id="countdowntimer"><%=timer%> </span> Segundos para
 			responder á pergunta.
 		</p>
 
 		<script type="text/javascript">
-			var timeleft = 10;
+			var timeleft = <%=timer%>;
 			var downloadTimer = setInterval(
 					function() {
 						timeleft--;
