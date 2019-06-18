@@ -34,7 +34,6 @@ public class LoginServlet extends HttpServlet {
 	
 	public LoginServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 	
 
@@ -77,13 +76,13 @@ public class LoginServlet extends HttpServlet {
 	        	session.setAttribute("numero", numero);
 	            userPermit="aluno";
 	            cliente.joinGroup(groupID);
-	            Element pergCompletaElem= (Element)readXML(cliente.apanharMulti());
-	            String pergCompleta= cliente.apanharMulti();
+	            String pergCompleta = cliente.apanharMulti();
+	            cliente.leaveGroup(groupID);
+	            Element pergCompletaElem= (Element)readXML(pergCompleta);
 	            String soTxt = pergCompleta.split("<respPossiveis>")[0]+" </pergunta>";
-	            String respPossiveis = ("<respPossiveis>" + pergCompleta.split("<respPossiveis>")[1]).split("</pergunta>")[0];
 	            session.setAttribute("pergunta", pergCompletaElem);
 	            session.setAttribute("titulo", soTxt);
-	            session.setAttribute("respostas", respPossiveis);
+	            
 	            ok = true;
 	        }
 			else {
