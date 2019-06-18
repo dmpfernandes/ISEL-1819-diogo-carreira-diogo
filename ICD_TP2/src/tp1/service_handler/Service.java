@@ -187,11 +187,12 @@ public class Service implements Runnable{
 											String id = e.getAttribute("id");
 											if(id.equals(idPergunta)) {
 												//aqui encontramos o element que contem a pergunta a fazer
-												perguntaSelecionada = nodeToString(e.cloneNode(true)).split("<respPossiveis>")[0]+" </pergunta>";
-											 
+												perguntaSelecionada = nodeToString(e.cloneNode(true));
+												
 											}
 										}
 									}
+									System.out.println(perguntaSelecionada);
 									if(perguntaSelecionada.isEmpty()) {
 							        	atirar("id da pergunta selecionada ("+idPergunta+") nao registado");
 							        }

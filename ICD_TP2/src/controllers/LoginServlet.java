@@ -1,12 +1,23 @@
 package controllers;  
 import java.io.IOException;  
-import java.io.PrintWriter;  
+import java.io.PrintWriter;
+import java.io.StringReader;
+
 import javax.servlet.RequestDispatcher;  
 import javax.servlet.ServletException;  
 import javax.servlet.http.HttpServlet;  
 import javax.servlet.http.HttpServletRequest;  
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+
 import javax.servlet.annotation.WebServlet;
 
 
@@ -57,10 +68,22 @@ public class LoginServlet extends HttpServlet {
 			}
 	        else if(resposta.contains("group")) {
 	        	String groupID = resposta.split("'")[1];
+	        	if(session.getAttribute("cliente_obj")!=null)
+					session.setAttribute("cliente_obj", null);
+	        	session.setAttribute("cliente_obj", cliente);
 	        	if(session.getAttribute("groupID")!=null)
 					session.setAttribute("groupID", null);
 	        	session.setAttribute("groupID", groupID);
+	        	session.setAttribute("numero", numero);
 	            userPermit="aluno";
+	            cliente.joinGroup(groupID);
+	            Element pergCompletaElem= (Element)readXML(cliente.apanharMulti());
+	            String pergCompleta= cliente.apanharMulti();
+	            String soTxt = pergCompleta.split("<respPossiveis>")[0]+" </pergunta>";
+	            String respPossiveis = ("<respPossiveis>" + pergCompleta.split("<respPossiveis>")[1]).split("</pergunta>")[0];
+	            session.setAttribute("pergunta", pergCompletaElem);
+	            session.setAttribute("titulo", soTxt);
+	            session.setAttribute("respostas", respPossiveis);
 	            ok = true;
 	        }
 			else {
@@ -93,6 +116,23 @@ public class LoginServlet extends HttpServlet {
               
     }  
   
+	public Element readXML(String xml) {
+		XPathFactory xpathFactory = XPathFactory.newInstance(); 
+		XPath xpath = xpathFactory.newXPath(); 
+		InputSource source = new InputSource(new StringReader(xml)); 
+
+		try {
+			Document doc = (Document) xpath.evaluate("/", source, XPathConstants.NODE);
+			return doc.getDocumentElement();
+		} catch (XPathExpressionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		} 
+		return null;
+		
+	}
+	
     @Override  
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)  
             throws ServletException, IOException {  
