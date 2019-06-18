@@ -9,7 +9,7 @@
 <body>
 	<h1>Menu Escolha</h1>
 	
-	<p><a href="adicionarPergunta.jsp" id="addPergunta">Adicionar Pergunta</a></p>
+	<p><a href="adicionar.jsp" id="addPergunta">Adicionar Pergunta</a></p>
 	
 	<p><a href="perguntar.jsp" id="perguntar">Selecionar Pergunta</a></p>
 	

@@ -137,7 +137,7 @@ public class Service implements Runnable{
 										String numeroDBuser = e.getElementsByTagName("numero").item(0).getTextContent();
 										if(numeroDBuser.equals(numero)) {
 											if(!tipoDBuser.equals("prof") && !tipoDBuser.equals("admin")) {
-												atirar("Não tem autorização para adicionar perguntas.");
+												atirar("<adicionar>Não tem autorização para adicionar perguntas.</adicionar>");
 											}else {
 												rootDBitems = readXMLfromFile("perguntas.xml");
 												if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
@@ -151,7 +151,7 @@ public class Service implements Runnable{
 															outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml");
 														}
 													}
-													atirar("Pergunta/s adicionada/s com sucesso.");
+													atirar("<adicionar>Pergunta/s adicionada/s com sucesso.</adicionar>");
 													
 												}
 											}
