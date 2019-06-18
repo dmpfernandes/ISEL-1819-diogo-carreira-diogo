@@ -20,3 +20,6 @@
 #mensagem resultado
 <resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>
 
+#mensagem listar
+<listar tipo="perguntas"/>
+<listar tipo="users"/>

@@ -10,7 +10,7 @@ import tp1.service_handler.Service;
 
 public class ServidorUDP {
 
-    public final static int DIM_BUFFER  = 1000;
+    public final static int DIM_BUFFER  = 1000000;
     
     private Service service;
     Thread t;

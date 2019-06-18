@@ -11,8 +11,6 @@
 	
 	<p><a href="adicionarPergunta.jsp" id="addPergunta">Adicionar Pergunta</a></p>
 	
-	<p><a href="listaPerguntas.jsp" id="listar">Listar Perguntas</a></p>
-	
 	<p><a href="perguntar.jsp" id="perguntar">Selecionar Pergunta</a></p>
 	
 	

@@ -43,7 +43,7 @@ import org.xml.sax.InputSource;
 
 
 public class Service implements Runnable{
-    public final static int DIM_BUFFER  = 1000;
+    public final static int DIM_BUFFER  = 1000000;
 
 	DatagramSocket s;
 	DatagramPacket inputPacket;
@@ -298,6 +298,25 @@ public class Service implements Runnable{
 						
 						//Envio :<resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>
 						break;
+					case "listar": // kill
+						
+						if(root.hasAttribute("tipo")) {
+							String resposta = "";
+							if(root.getAttribute("tipo").equals("perguntas")) {
+								Element rootDB = readXMLfromFile("perguntas.xml");
+								resposta = nodeToString(rootDB);
+							}
+							else {
+								Element rootDB = readXMLfromFile("users.xml");
+								resposta = nodeToString(rootDB);
+							}
+							System.out.println(resposta);
+							atirar(resposta+"       ");
+						}else {
+							atirar("<listar result='failure'>");
+						}
+						
+						break;
 					case "kill": // kill
 						System.out.println("casekill");
 						atirar("Conneccao Terminada");
@@ -327,6 +346,9 @@ public class Service implements Runnable{
 			}
 			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
 			          address, port);
+			System.out.println("outputPacket.getLength()    "+outputPacket.getLength());
+			System.out.println("out.getLength()    "+out.length());
+			System.out.println("outputPacket.getOffset()    "+outputPacket.getOffset());
 			System.out.println(new String(outputPacket.getData(), outputPacket.getOffset(), outputPacket.getLength()));
 			System.out.println(address+":"+port);
 			s.send(outputPacket);

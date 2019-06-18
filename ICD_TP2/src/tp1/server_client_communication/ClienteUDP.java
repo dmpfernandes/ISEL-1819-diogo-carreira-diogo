@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 
 
 public class ClienteUDP {
-	public final static int DIM_BUFFER  = 1000;
+	public final static int DIM_BUFFER  = 1000000;
 	public DatagramPacket inputPacket;
 	public MulticastSocket socketmulti;
 	public DatagramSocket socket;
