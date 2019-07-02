@@ -13,9 +13,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 public class ClientLauncher {
-	ClienteUDP c;
-	ClienteUDP cmulti;
+	Client c;
+	MessageReceiver mr;
 	Scanner sc;
+	
+	private Thread t;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ClientLauncher cl = new ClientLauncher();
@@ -24,31 +27,25 @@ public class ClientLauncher {
 	}
 	
 	public ClientLauncher() {
-		c = new ClienteUDP();
-		cmulti = new ClienteUDP();
+		c = new Client();
+		mr = new MessageReceiver(c);
+		mr.run();
 	}
 	
 	public void run() {
 		while(true) {
-			
+			String msg = null;
+			if(mr.getMsg() != null || mr.getMsg().isEmpty()) {
+				msg = mr.getMsg();
+				System.out.println("recebido: " +msg);
+			}
 			
 			System.out.println("Que desejas");
 			sc = new Scanner(System.in);
 			String pedido = sc.nextLine();
 			if(pedido.length() > 0) {
-				c.atirar(pedido);
-				String resposta = c.apanhar();
-				
-				System.out.println("recebido: " + resposta);
-				if(resposta.contains("group")) {
-					Element e = readXML(resposta);
-					String group = e.getAttribute("group");
-					cmulti.joinGroup(group);
-					System.out.println("joinGroup ("+group+") successfully");
-					System.out.println("recebido em multi: " + cmulti.apanharMulti());
-					cmulti.leaveGroup(group);
-				}
-				
+				c.enviarMsg(pedido);
+
 			}
 			
 			

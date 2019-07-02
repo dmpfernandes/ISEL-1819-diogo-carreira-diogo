@@ -80,7 +80,8 @@ public class ResponderServlet extends HttpServlet {
 				} else if (rspFinal.equals("false")) {
 					request.setAttribute("respostaAnterior", "Errada.");
 				}
-
+				session.setAttribute("pergunta", null);
+				session.setAttribute("titulo", null);
 		}
 		getServletContext().getRequestDispatcher("/responder.jsp").forward(request, response);
 

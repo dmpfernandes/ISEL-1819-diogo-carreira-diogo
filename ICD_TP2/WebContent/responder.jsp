@@ -18,6 +18,7 @@
 
 	<div id="respostaAnt" name="respostaAnt"> <%= request.getAttribute("respostaAnterior") != null ? "A resposta anterior estava:" + request.getAttribute("respostaAnterior") : "" %></div>
 	<%
+		if (session.getAttribute("pergunta") != null) {
 		String titulo = "";
 		Element pergunta = (Element) session.getAttribute("pergunta");
 		ClienteUDP c = (ClienteUDP) session.getAttribute("client_obj");
@@ -32,6 +33,7 @@
 			}
 		}
 	%>
+
 	<div id="pergunta" name="pergunta">
 		<form action="ResponderServlet" method="post">
 			<div id="resp">
@@ -57,7 +59,7 @@
 			Restam <span id="countdowntimer"><%=timer%> </span> Segundos para
 			responder á pergunta.
 		</p>
-
+		
 		<script type="text/javascript">
 			var timeleft = <%=timer%>;
 			var downloadTimer = setInterval(
@@ -76,7 +78,7 @@
 			}
 					}, 1000);
 		</script>
-
+<% }%>
 
 		<div align="center"></div>
 	</div>

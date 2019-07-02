@@ -10,7 +10,7 @@ public class Client {
 	String host = "localhost";
 	ObjectOutputStream outStream;
 	ObjectInputStream inStream;
-	static final int numeroPorto= 1571; // o número do porto tem de ser um número maior que 1024 e que não esteja a ser usado
+	static final int numeroPorto= 1571; // o nï¿½mero do porto tem de ser um nï¿½mero maior que 1024 e que nï¿½o esteja a ser usado
 	
 	public Client() {
 		
@@ -26,33 +26,23 @@ public class Client {
 		}
 	}
 	
-	public void atirar(String out) {
+	public void enviarMsg(String out) {
 		try {
 			outStream.writeObject(out);
 		} catch (IOException e) {}
 	}
 	
-	public void limpar() {
+	public void limparBuffer() {
 		try {
 			outStream.reset();
 		} catch (IOException e) {}
 	}
 	
-	public String apanhar() {
+	public String receberMsg() {
 		String in = "";
 		try { in = (String) inStream.readObject(); }
 		catch (IOException e) {} catch (ClassNotFoundException e) {}
 		return in;
-	}
-		
-	public boolean verificar(String msg, String robot) {
-		System.out.println("Client may connect: " + (!msg.contains(robot)));
-		if (!msg.contains(robot)) {
-			return true;
-		}
-		else {
-			return false;
-		}
 	}
 	
 	public void fecharCanal() {

@@ -46,8 +46,9 @@ import org.xml.sax.InputSource;
 public class Service implements Runnable{
     public final static int DIM_BUFFER  = 1000000;
 
-	DatagramSocket s;
-	DatagramPacket inputPacket;
+    Socket s;
+	ObjectOutputStream os;
+	ObjectInputStream is;
 	
 	Element root;
 	Element rootDBitems;
@@ -62,7 +63,7 @@ public class Service implements Runnable{
 
 	
 	
-	public Service(DatagramSocket socket) {
+	public Service(Socket socket) {
 		this.s = socket;
 	}
 	
@@ -75,8 +76,12 @@ public class Service implements Runnable{
 	@Override
 	public void run() {
 		setIdService();
-		byte inputBuffer[]  = new byte[DIM_BUFFER];
-		inputPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
+		try {
+			os = new ObjectOutputStream(s.getOutputStream()); 
+			is = new ObjectInputStream(s.getInputStream()); 
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		while(running) {
 			try {				
@@ -105,8 +110,8 @@ public class Service implements Runnable{
 									if(tipoDBuser.equals(tipo) && numeroDBuser.equals(numero)) {
 										this.userTipo = tipo;
 										Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
-										address.put(inputPacket.getAddress(), inputPacket.getPort());
-										System.out.println("address --> "+numeroDBuser+"   "+inputPacket.getAddress()+":"+inputPacket.getPort());
+										address.put(s.getInetAddress(), s.getPort());
+										System.out.println("address --> "+numeroDBuser+"   "+s.getInetAddress()+":"+s.getPort());
 										login.put(numeroDBuser, address);
 										if (tipo.equals("prof")) {
 											atirar("<login success='true'/>");
@@ -128,7 +133,7 @@ public class Service implements Runnable{
 						
 						for (Entry<String, Map<InetAddress, Integer>> entry : login.entrySet()) {
 							Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
-							address.put(inputPacket.getAddress(), inputPacket.getPort());
+							address.put(s.getInetAddress(), s.getPort());
 				            if (entry.getValue().equals(address)) {
 				                String numero = entry.getKey();
 				                for (int i = 1; i < users.getLength(); i++) {
@@ -171,7 +176,7 @@ public class Service implements Runnable{
 						rootDBusers = readXMLfromFile("users.xml");
 						for (Entry<String, Map<InetAddress, Integer>> entry : login.entrySet()) {
 							Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
-							address.put(inputPacket.getAddress(), inputPacket.getPort());
+							address.put(s.getInetAddress(), s.getPort());
 				            if (entry.getValue().equals(address)) {
 								if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
 									String idPergunta = "_0"+root.getAttribute("index");
@@ -214,7 +219,7 @@ public class Service implements Runnable{
 													        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
 													        		InetAddress path = entry1.getKey();
 													        		Integer port = entry1.getValue();
-													        	    atirar("<login group='230.0.0.1'/>", path, port,false);
+													        	    atirar("<login group='230.0.0.1'/>");
 													        	    // do something with key and/or tab
 													        	}
 													        	
@@ -239,8 +244,8 @@ public class Service implements Runnable{
 										        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
 										        		InetAddress path = entry1.getKey();
 										        		Integer port = entry1.getValue();
-										        		if(!port.equals(inputPacket.getPort())) {
-											        	    atirar("<login group='230.0.0.1'/>", path, port,false);
+										        		if(!port.equals(s.getPort())) {
+											        	    atirar("<login group='230.0.0.1'/>");
 											        	    // do something with key and/or tab
 										        		}
 										        	}
@@ -250,7 +255,7 @@ public class Service implements Runnable{
 										
 									}
 									atirar("<pergunta index="+idPergunta+" status='success'/>");
-									atirar(perguntaSelecionada, InetAddress.getByName("230.0.0.1"), 4446,true);
+									atirar(perguntaSelecionada);
 									
 								
 								}
@@ -353,7 +358,7 @@ public class Service implements Runnable{
 					}
 					System.out.println();
 				}
-			} catch (TransformerException | UnknownHostException e) {
+			} catch (TransformerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} finally {
@@ -365,43 +370,34 @@ public class Service implements Runnable{
 		} // end while
 	}
 	
-	void atirar(String out ,InetAddress address, Integer port, boolean multi) {
+	void atirar(String out) {
 		try {
-			if(multi) {
-				Thread.sleep(5000);
-			}
-			DatagramPacket outputPacket = new DatagramPacket(out.getBytes(), out.length(), 
-			          address, port);
-			System.out.println("outputPacket.getLength()    "+outputPacket.getLength());
-			System.out.println("out.getLength()    "+out.length());
-			System.out.println("outputPacket.getOffset()    "+outputPacket.getOffset());
-			System.out.println(new String(outputPacket.getData(), outputPacket.getOffset(), outputPacket.getLength()));
-			System.out.println(address+":"+port);
-			s.send(outputPacket);
-		} catch (IOException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			os.writeObject(out);
+		} catch (IOException e) {}
 	}
- 
-	void atirar(String out ) {
-		atirar(out, inputPacket.getAddress(), inputPacket.getPort(), false);
+	
+	void limpar() {
+		try {
+			os.reset();
+		} catch (IOException e) {}
 	}
 	
 	String apanhar() {
-		//return new String(inputPacket.getData(), 0, inputPacket.getLength()); // Ler tudo incluindo headers
-		try {
-			s.receive(inputPacket);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new String(inputPacket.getData(), inputPacket.getOffset(), inputPacket.getLength());
+		String in = "";
+		try { in = (String) is.readObject(); }
+		catch (IOException | ClassNotFoundException e) {} 
+		return in;
 	}
 	
 	void fecharCanal() {
-		if (s != null) s.close(); 
-		
+		if (s != null) {
+			try {
+				s.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
 	}
 	
 	public int getlastPerguntaID() {
