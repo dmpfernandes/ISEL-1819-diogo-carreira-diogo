@@ -1,4 +1,4 @@
-package tp1.server_client_communication;
+package tp1.client;
 
 import java.io.ObjectInputStream;
 

@@ -1,4 +1,4 @@
-package tp1.server_client_communication;
+package tp1.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;

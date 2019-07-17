@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import tp1.server_client_communication.ClienteUDP;
+import tp1.server.ClienteUDP;
 
 @WebServlet("/PerguntarServlet")
 public class PerguntarServlet extends HttpServlet {

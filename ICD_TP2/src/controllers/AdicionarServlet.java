@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.w3c.dom.Element;
 
-import tp1.server_client_communication.ClienteUDP;
+import tp1.server.ClienteUDP;
 
 /**
  * Servlet implementation class addPerguntaServlet

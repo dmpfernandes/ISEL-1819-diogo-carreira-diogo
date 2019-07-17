@@ -8,6 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="/home/denga/Downloads/jar_files/servlet-api-6.0.53.jar"/>
+	<classpathentry kind="lib" path="/home/denga/lib/jsp-api.jar"/>
+	<classpathentry kind="lib" path="/home/denga/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

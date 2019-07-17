@@ -18,10 +18,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import javax.servlet.annotation.WebServlet;
+import tp1.server.ClienteUDP;
 
-
-import tp1.server_client_communication.ClienteUDP;  
+import javax.servlet.annotation.WebServlet;  
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {  
     /**
