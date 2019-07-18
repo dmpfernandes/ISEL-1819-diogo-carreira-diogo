@@ -41,6 +41,7 @@ public class MessageReceiver implements Runnable {
 			 String choose = xml.getLocalName();
 			 switch(choose) {
 			 	case "login":
+			 		limparBoard();
 			 		if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("prof")) {
 			 			escreverMsg("Login Success");
 			 			//cGUI.showMenu();
@@ -54,15 +55,24 @@ public class MessageReceiver implements Runnable {
 			 		}
 			 		break;
 			 	case "adicionar":
+			 		limparBoard();
 			 		
 			 		break;
 			 	case "pergunta":
+			 		limparBoard();
+			 		
 			 		break;
 			 	case "resultado":
+			 		limparBoard();
+			 		
 			 		break;
 			 	case "perguntas":
+			 		limparBoard();
+			 		
 			 		break;
 			 	case "users":
+			 		limparBoard();
+			 		
 			 		break;
 			 		
 			 }
