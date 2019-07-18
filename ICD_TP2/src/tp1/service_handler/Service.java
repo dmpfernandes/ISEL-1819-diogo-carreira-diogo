@@ -77,7 +77,7 @@ public class Service implements Runnable{
 	public void run() {
 		setIdService();
 		try {
-			os = new ObjectOutputStream(s.getOutputStream()); 
+			
 			is = new ObjectInputStream(s.getInputStream()); 
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -101,20 +101,24 @@ public class Service implements Runnable{
 						if (root.getNodeType()==Node.ELEMENT_NODE && root.hasAttributes()) {
 							NodeList users = rootDBusers.getChildNodes();
 							String numero = root.getAttribute("numero");
-							String tipo = root.getAttribute("tipo");
+							String pass = root.getAttribute("pass");
 							for (int i = 1; i < users.getLength(); i++) {
 								if(users.item(i).hasAttributes()) {
 									String tipoDBuser = users.item(i).getAttributes().getNamedItem("tipo").getTextContent();
 									Element e = (Element) users.item(i);
 									String numeroDBuser = e.getElementsByTagName("numero").item(0).getTextContent();
-									if(tipoDBuser.equals(tipo) && numeroDBuser.equals(numero)) {
-										this.userTipo = tipo;
+									String passDBuser = e.getElementsByTagName("pass").item(0).getTextContent();
+									if(passDBuser.equals(pass) && numeroDBuser.equals(numero)) {
+										this.userTipo = tipoDBuser;
 										Map<InetAddress, Integer> address = new HashMap<InetAddress, Integer>();
 										address.put(s.getInetAddress(), s.getPort());
 										System.out.println("address --> "+numeroDBuser+"   "+s.getInetAddress()+":"+s.getPort());
 										login.put(numeroDBuser, address);
-										if (tipo.equals("prof")) {
-											atirar("<login success='true'/>");
+										if (tipoDBuser.equals("prof")) {
+											atirar("<login success='true' type='prof'/>");
+										}
+										if (tipoDBuser.equals("aluno")) {
+											atirar("<login success='true' type='aluno'/>");
 										}
 										atirou = true;
 										break;
@@ -219,18 +223,18 @@ public class Service implements Runnable{
 													        	for ( Map.Entry<InetAddress, Integer> entry1 : add.entrySet()) {
 													        		InetAddress path = entry1.getKey();
 													        		Integer port = entry1.getValue();
-													        	    atirar("<login group='230.0.0.1'/>");
-													        	    // do something with key and/or tab
+													        		try {
+																		Socket sa = new Socket(path,port);
+																		atirar(perguntaSelecionada,sa);
+																	} catch (IOException e1) {
+																		// TODO Auto-generated catch block
+																		e1.printStackTrace();
+																	}
 													        	}
-													        	
 													        }
-													        
-												        
 														}
-													
 													}
-												}
-													
+												}	
 											}
 										}
 									}
@@ -245,19 +249,20 @@ public class Service implements Runnable{
 										        		InetAddress path = entry1.getKey();
 										        		Integer port = entry1.getValue();
 										        		if(!port.equals(s.getPort())) {
-											        	    atirar("<login group='230.0.0.1'/>");
-											        	    // do something with key and/or tab
+										        			try {
+																Socket sa = new Socket(path,port);
+																atirar(perguntaSelecionada,sa);
+															} catch (IOException e1) {
+																// TODO Auto-generated catch block
+																e1.printStackTrace();
+															}
 										        		}
 										        	}
 												}
 											}
 										}
-										
 									}
 									atirar("<pergunta index="+idPergunta+" status='success'/>");
-									atirar(perguntaSelecionada);
-									
-								
 								}
 				            }
 						}
@@ -371,9 +376,15 @@ public class Service implements Runnable{
 	}
 	
 	void atirar(String out) {
+		atirar(out,s);
+	}
+	
+	void atirar(String out, Socket s) {
 		try {
+			os = new ObjectOutputStream(s.getOutputStream());
 			os.writeObject(out);
 		} catch (IOException e) {}
+		
 	}
 	
 	void limpar() {

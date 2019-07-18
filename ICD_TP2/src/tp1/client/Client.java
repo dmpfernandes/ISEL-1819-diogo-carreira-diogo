@@ -9,7 +9,6 @@ public class Client {
 	Socket cliente;	
 	String host = "localhost";
 	ObjectOutputStream outStream;
-	ObjectInputStream inStream;
 	static final int numeroPorto= 1571; // o n�mero do porto tem de ser um n�mero maior que 1024 e que n�o esteja a ser usado
 	
 	public Client() {
@@ -17,7 +16,6 @@ public class Client {
 		try {
 			cliente= new Socket(host, numeroPorto);
 			outStream = new ObjectOutputStream(cliente.getOutputStream()); 
-			inStream = new ObjectInputStream(cliente.getInputStream()); 
 			System.out.println("Ligacao ao servidor estabelecida.");
 			}
 		catch (IOException e) {
@@ -38,21 +36,20 @@ public class Client {
 		} catch (IOException e) {}
 	}
 	
-	public String receberMsg() {
-		String in = "";
-		try { in = (String) inStream.readObject(); }
-		catch (IOException e) {} catch (ClassNotFoundException e) {}
-		return in;
-	}
+	
 	
 	public void fecharCanal() {
 		try {
 			outStream.close(); 
-			inStream.close();
+
 			cliente.close();
 		}
 		catch (IOException e) { 
 			 e.printStackTrace(); 
 		}
+	}
+
+	public Socket getCliente() {
+		return cliente;
 	}
 } 

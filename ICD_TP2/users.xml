@@ -3,17 +3,21 @@
 	<user uid="0" tipo="prof" dataNascimento="03-03-1990">
 		<nome>aaaa</nome>
         <numero>12345</numero>
+        <pass>1111</pass>
 	</user>
 	<user uid="1" tipo="aluno" dataNascimento="01-01-2000">
 		<nome>bbbb</nome>
         <numero>12346</numero>
+        <pass>2222</pass>
 	</user>
 	<user uid="2" tipo="aluno" dataNascimento="01-01-2000">
 		<nome>cccc</nome>
         <numero>12347</numero>
+        <pass>3333</pass>
 	</user>
 	<user uid="3" tipo="admin" dataNascimento="28-04-2019">
 		<nome>admin</nome>
         <numero>00000</numero>
+        <pass>0000</pass>
 	</user>
 </users>
