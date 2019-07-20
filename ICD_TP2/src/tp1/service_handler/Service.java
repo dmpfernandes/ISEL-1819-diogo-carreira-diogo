@@ -276,7 +276,7 @@ public class Service implements Runnable{
 						if(root.hasAttributes()) {
 							NodeList perguntas = rootDBitems.getChildNodes();
 							String numeroAluno = root.getAttribute("numeroAluno");
-							String idPergunta = root.getAttribute("indexPergunta");
+							String idPergunta = "_0"+root.getAttribute("indexPergunta");
 							String idxResposta = root.getAttribute("indexResposta");
 							if(idxResposta.equals("")) {
 								

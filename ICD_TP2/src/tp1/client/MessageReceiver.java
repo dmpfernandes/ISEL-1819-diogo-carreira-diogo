@@ -125,14 +125,17 @@ public class MessageReceiver implements Runnable {
 		for (int i = 0; i < perguntas.getLength(); i++) {
 			if(perguntas.item(i).hasAttributes()) {
 				String duracao = ((Element) perguntas.item(i)).getAttribute("duracao");
+				String id = ((Element) perguntas.item(i)).getAttribute("id").substring(2);
 				String tema = ((Element) perguntas.item(i)).getAttribute("tema");
 				String titulo = ((Element) perguntas.item(i)).getElementsByTagName("texto").item(0).getTextContent();
 				NodeList respPossiveis = ((Element) perguntas.item(i)).getElementsByTagName("resp");
 				String resp = "";
+				int count = 0;
 				for (int j = 0; j < respPossiveis.getLength(); j++) {
-					resp += "	"+(j+1) + ". " + respPossiveis.item(j).getTextContent() + "\n";
+					count++;
+					resp += "	"+count + ". " + respPossiveis.item(j).getTextContent() + "\n";
 				}
-				msg += "Pergunta "+(i+1)+": "+titulo+"\n Tema: "+tema+"\n"+resp + "\n\n";
+				msg += "Pergunta "+id+": "+titulo+"\n Tema: "+tema+"\n"+resp + "\n\n";
 				
 			}
 		}

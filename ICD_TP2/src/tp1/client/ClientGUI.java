@@ -92,13 +92,13 @@ public class ClientGUI {
 		
 		
 		
-//		showLogin();
+		showLogin();
 //		showAdicionarPergunta();
 //		showEnviarPergunta();
 //		showAlunos();
 //		showInterfaceAluno();
 //		showMenu();
-		showPerguntas();
+//		showPerguntas();
 	}
 	
 	//check
@@ -156,12 +156,19 @@ public class ClientGUI {
 		limparPanel();
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		btnVerPerguntas = new JButton("Ver Perguntas");
 		btnVerPerguntas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showPerguntas();
+				String xmlListar = "<listar tipo='perguntas'/>";
+				c.enviarMsg(xmlListar);
+				System.out.println(xmlListar);
 			}
 		});
 		btnVerPerguntas.setBounds(166, 103, 133, 31);
@@ -194,7 +201,12 @@ public class ClientGUI {
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		textArea.setBounds(10, 23, 414, 98);
 		panel.add(textArea);
@@ -221,7 +233,12 @@ public class ClientGUI {
 		limparPanel();
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		tituloPergunta = new JTextField();
 		tituloPergunta.setBounds(66, 121, 122, 20);
@@ -330,7 +347,12 @@ public class ClientGUI {
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.addActionListener(new ActionListener() {
@@ -359,7 +381,12 @@ public class ClientGUI {
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.setBounds(160, 103, 133, 34);
@@ -379,7 +406,12 @@ public class ClientGUI {
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		JCheckBox chckbxTodos = new JCheckBox("Todos");
 		chckbxTodos.setBounds(10, 114, 66, 31);
