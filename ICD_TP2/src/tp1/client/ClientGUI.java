@@ -8,14 +8,20 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import java.awt.Font;
 import javax.swing.JCheckBox;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 
 public class ClientGUI {
 
+	Client c;
+	MessageReceiver mr;
 	private JFrame frame;
 	public JTextArea textArea;
 	private JTextField inputResposta;
@@ -41,6 +47,8 @@ public class ClientGUI {
 	private JButton btnAdicionarPergunta;
 	private JTextField textField;
 	private JTextField textField_1;
+	private JTextField inDuracao;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -49,6 +57,7 @@ public class ClientGUI {
 			public void run() {
 				try {
 					ClientGUI window = new ClientGUI();
+					
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,6 +71,10 @@ public class ClientGUI {
 	 */
 	public ClientGUI() {
 		initialize();
+		c = new Client();
+		mr = new MessageReceiver(this,c);
+		Thread t = new Thread(mr);
+		t.start();
 	}
 
 	/**
@@ -76,44 +89,63 @@ public class ClientGUI {
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 		
-		textArea = new JTextArea();
-		textArea.setBounds(10, 11, 414, 81);
-		panel.add(textArea);
 		
-		scrollBar = new JScrollPane(textArea);
-		scrollBar.setBounds(10, 11, 414, 81);
 		
-		panel.add(scrollBar);
-		showLogin();
 		
+//		showLogin();
+//		showAdicionarPergunta();
+//		showEnviarPergunta();
+//		showAlunos();
+//		showInterfaceAluno();
+//		showMenu();
+		showPerguntas();
 	}
 	
 	//check
 	public void showLogin() {
 		limparPanel();
 		JButton btnSubmit = new JButton("Submit");
-		btnSubmit.setBounds(201, 163, 89, 23);
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String user = inNAluno.getText();
+				String pass = new String(inPassword.getPassword());
+				String xmlLogin = "<login numero='"+user+"' pass='"+pass+"'/>";
+				c.enviarMsg(xmlLogin);
+				System.out.println(xmlLogin);
+			}
+		});
+		btnSubmit.setBounds(205, 184, 89, 23);
 		panel.add(btnSubmit);
 		
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		textArea.setEditable(false);
+
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
+		
 		inNAluno = new JTextField();
-		inNAluno.setBounds(201, 86, 89, 20);
+		inNAluno.setBounds(205, 107, 89, 20);
 		panel.add(inNAluno);
 		inNAluno.setColumns(10);
 		
 		inPassword = new JPasswordField();
-		inPassword.setBounds(201, 117, 89, 20);
+		inPassword.setBounds(205, 138, 89, 20);
 		panel.add(inPassword);
 		
 		JLabel nAluno = new JLabel("N\u00BA Aluno:");
-		nAluno.setBounds(127, 89, 64, 17);
+		nAluno.setBounds(92, 110, 103, 17);
 		panel.add(nAluno);
 		
 		JLabel inPassword = new JLabel("Password:");
-		inPassword.setBounds(127, 117, 64, 20);
+		inPassword.setBounds(92, 138, 103, 20);
 		panel.add(inPassword);
 		
-		textArea = new JTextArea();
-		textArea.setEditable(false);
+		
+		
+		panel.revalidate();
 		panel.repaint();
 		
 	}
@@ -122,22 +154,48 @@ public class ClientGUI {
 	//check
 	public void showMenu() {
 		limparPanel();
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		btnVerPerguntas = new JButton("Ver Perguntas");
+		btnVerPerguntas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showPerguntas();
+			}
+		});
 		btnVerPerguntas.setBounds(166, 103, 133, 31);
 		panel.add(btnVerPerguntas);
 		
 		btnAddPergunta = new JButton("Adicionar Pergunta");
+		btnAddPergunta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				showAdicionarPergunta();
+			}
+		});
 		btnAddPergunta.setBounds(166, 145, 133, 31);
 		panel.add(btnAddPergunta);
 		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
+		btnSeleccionarPergunta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showEnviarPergunta();
+			}
+		});
 		btnSeleccionarPergunta.setBounds(166, 187, 133, 31);
 		panel.add(btnSeleccionarPergunta);
+		
+		panel.revalidate();
 		panel.repaint();
 	}
 	//check
 	public void showInterfaceAluno() {
 		limparPanel();
+		
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		textArea.setBounds(10, 23, 414, 98);
 		panel.add(textArea);
 		
@@ -153,12 +211,18 @@ public class ClientGUI {
 		JButton submitResposta = new JButton("Submeter");
 		submitResposta.setBounds(200, 215, 89, 23);
 		panel.add(submitResposta);
+		
+		panel.revalidate();
 		panel.repaint();
 	}
 	
 	//check
 	public void showAdicionarPergunta() {
 		limparPanel();
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		tituloPergunta = new JTextField();
 		tituloPergunta.setBounds(66, 121, 122, 20);
 		panel.add(tituloPergunta);
@@ -170,7 +234,7 @@ public class ClientGUI {
 		
 		lblAdicionarNovaPergunta = new JLabel("Adicionar nova Pergunta:");
 		lblAdicionarNovaPergunta.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblAdicionarNovaPergunta.setBounds(10, 95, 155, 20);
+		lblAdicionarNovaPergunta.setBounds(10, 95, 200, 20);
 		panel.add(lblAdicionarNovaPergunta);
 		
 		inTema = new JTextField();
@@ -179,12 +243,12 @@ public class ClientGUI {
 		inTema.setColumns(10);
 		
 		lblTema = new JLabel("Tema:");
-		lblTema.setBounds(224, 124, 46, 14);
+		lblTema.setBounds(224, 123, 46, 14);
 		panel.add(lblTema);
 		
 		lblAdicioneAt = new JLabel("Adicione at\u00E9 4 respostas poss\u00EDveis:");
-		lblAdicioneAt.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblAdicioneAt.setBounds(10, 144, 209, 20);
+		lblAdicioneAt.setFont(new Font("Dialog", Font.PLAIN, 11));
+		lblAdicioneAt.setBounds(10, 144, 200, 20);
 		panel.add(lblAdicioneAt);
 		
 		respPossivel_1 = new JTextField();
@@ -208,29 +272,95 @@ public class ClientGUI {
 		respPossivel_4.setColumns(10);
 		
 		btnSubmit = new JButton("Submit");
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				/* <adicionarPergunta>
+				 * 	<pergunta  tema="basic" duracao="20">
+				 * 		<texto>Quantos quadrados estao presentes na seguinte imagem?</texto>
+				 * 		<anexoMultimedia>squares.jpeg</anexoMultimedia>
+				 * 		<respPossiveis>
+				 * 			<resp>8</resp>
+				 * 			<resp>10</resp>
+				 * 			<resp>11</resp>
+				 * 			<resp>12</resp>
+				 * 		</respPossiveis></pergunta>
+				 * </adicionarPergunta>
+				 * */
+				ArrayList<String> resps = getRespostasPossiveis();
+				if(!tituloPergunta.getText().isEmpty() && !inTema.getText().isEmpty() && resps.size() >= 1 ) {
+					String msg = "<adicionarPergunta><pergunta  tema='" + inTema.getText() + "' duracao='" + inDuracao.getText() + "'><texto>"
+				 + tituloPergunta.getText() + "</texto><anexoMultimedia></anexoMultimedia><respPossiveis>";
+					
+					for(int i = 0; i<resps.size(); i++) {
+						msg = msg + "<resp>" + resps.get(i) + "</resp>";
+					}
+					msg = msg + "</respPossiveis></pergunta></adicionarPergunta>";
+					c.enviarMsg(msg);
+				}
+				
+			}
+
+			private ArrayList<String> getRespostasPossiveis() {
+				ArrayList<String> resp = new ArrayList<>();
+				if(!respPossivel_1.getText().isEmpty()) resp.add(respPossivel_1.getText());
+				if(!respPossivel_2.getText().isEmpty()) resp.add(respPossivel_2.getText());
+				if(!respPossivel_3.getText().isEmpty()) resp.add(respPossivel_3.getText());
+				if(!respPossivel_4.getText().isEmpty()) resp.add(respPossivel_4.getText());
+				return resp;
+			}
+		});
 		btnSubmit.setBounds(181, 228, 89, 23);
 		panel.add(btnSubmit);
 		
+		JLabel lblDuracao = new JLabel("Duracao:");
+		lblDuracao.setBounds(224, 146, 77, 14);
+		panel.add(lblDuracao);
 		
+		inDuracao = new JTextField();
+		inDuracao.setColumns(10);
+		inDuracao.setBounds(319, 144, 83, 20);
+		panel.add(inDuracao);
+		
+		panel.revalidate();
 		panel.repaint();
 	}
 	//check
 	public void showPerguntas() {
 		limparPanel();
 		
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
+		btnSeleccionarPergunta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showEnviarPergunta();
+			}
+		});
 		btnSeleccionarPergunta.setBounds(160, 103, 133, 34);
 		panel.add(btnSeleccionarPergunta);
 		
 		btnAdicionarPergunta = new JButton("Adicionar pergunta");
+		btnAdicionarPergunta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				showAdicionarPergunta();
+			}
+		});
 		btnAdicionarPergunta.setBounds(160, 148, 133, 34);
 		panel.add(btnAdicionarPergunta);
+		
+		panel.revalidate();
 		panel.repaint();
 	}
 	//check
 	public void showAlunos() {
 		limparPanel();
 		
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.setBounds(160, 103, 133, 34);
 		panel.add(btnSeleccionarPergunta);
@@ -238,12 +368,19 @@ public class ClientGUI {
 		btnAdicionarPergunta = new JButton("Adicionar pergunta");
 		btnAdicionarPergunta.setBounds(160, 148, 133, 34);
 		panel.add(btnAdicionarPergunta);
+		
+		panel.revalidate();
 		panel.repaint();
 
 	}
 	//check
 	public void showEnviarPergunta() {
 		limparPanel();
+		
+		textArea = new JTextArea();
+		textArea.setBounds(10, 11, 414, 81);
+		panel.add(textArea);
+		
 		JCheckBox chckbxTodos = new JCheckBox("Todos");
 		chckbxTodos.setBounds(10, 114, 66, 31);
 		panel.add(chckbxTodos);
@@ -270,14 +407,20 @@ public class ClientGUI {
 		btnSubmit.setBounds(135, 211, 89, 23);
 		panel.add(btnSubmit);
 		
+		panel.revalidate();
 		panel.repaint();
 	}
 	
 	public void limparPanel() {
-		for (int i = 0; i < panel.getComponents().length; i++) {
-			if(!(panel.getComponent(i) instanceof JTextArea) || !(panel.getComponent(i) instanceof JScrollPane)) {
-				panel.remove(panel.getComponent(i));
-			}
-		}
+
+		panel.removeAll();	
+	}
+
+	public JTextArea getTextArea() {
+		return textArea;
+	}
+
+	public void setTextArea(JTextArea textArea) {
+		this.textArea = textArea;
 	}
 }

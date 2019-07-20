@@ -12,91 +12,100 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class MessageReceiver implements Runnable {
 	
-	JTextArea board;
+	
 	ClientGUI cGUI;
 	Client c;
 	ObjectInputStream inStream;
 	
-	public MessageReceiver(ClientGUI cGUI, JTextArea board, Client c) {
-		this.board=board;
+	public MessageReceiver(ClientGUI cGUI, Client c) {
 		this.c =c;
 		this.cGUI = cGUI;
 	}
 
 	@Override
 	public void run() {
-		try {
-			inStream = new ObjectInputStream(c.getCliente().getInputStream());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
+		
 		while(true) {
 			 String msg = receberMsg();
-			 Element xml = readXML(msg);
-			 String choose = xml.getLocalName();
-			 switch(choose) {
-			 	case "login":
-			 		limparBoard();
-			 		if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("prof")) {
-			 			escreverMsg("Login Success");
-			 			//cGUI.showMenu();
-			 		}
-			 		if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("aluno")) {
-			 			escreverMsg("Login Success");
-			 			//cGUI.showInterfaceAluno();
-			 		}else {
-			 			escreverMsg("Login Unsuccessful");
-			 			
-			 		}
-			 		break;
-			 	case "adicionar":
-			 		limparBoard();
-			 		
-			 		break;
-			 	case "pergunta":
-			 		limparBoard();
-			 		
-			 		break;
-			 	case "resultado":
-			 		limparBoard();
-			 		
-			 		break;
-			 	case "perguntas":
-			 		limparBoard();
-			 		
-			 		break;
-			 	case "users":
-			 		limparBoard();
-			 		
-			 		break;
-			 		
-			 }
-				 
-			 escreverMsg(msg);
+			 if(msg != null && !msg.isEmpty()) {
+				 Element xml = readXML(msg);
+				 String choose = xml.getLocalName();
+				 System.out.println("choose = "+choose);
+				 switch(choose) {
+				 	case "login":
+				 		
+				 		if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("prof")) {
+				 			cGUI.showMenu();
+				 			escreverMsg("Login Success");
+				 			
+				 		}
+				 		else if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("aluno")) {
+				 			cGUI.showInterfaceAluno();
+				 			escreverMsg("Login Success");
+				 			
+				 		}else {
+				 			escreverMsg("Login Unsuccessful");
+				 			
+				 		}
+				 		break;
+				 	case "adicionar":
+				 		cGUI.showMenu();
+			 			escreverMsg(xml.getTextContent());
+				 		
+				 		break;
+				 	case "pergunta":
+				 		cGUI.showMenu();
+			 			escreverMsg(xml.getTextContent());
+				 		
+				 		break;
+				 	case "resultado":
+				 		cGUI.showInterfaceAluno();
+				 		String sucesso = xml.getAttribute("success");
+				 		if(Boolean.valueOf(sucesso)) {
+				 			escreverMsg("Resposta Certa");
+				 		}
+				 		else { 
+				 			escreverMsg("Resposta Errada");
+				 		}
+				 		break;
+				 	case "perguntas":
+				 		cGUI.showPerguntas();
+				 		escreverMsg(listarPerguntas(xml));	
+				 		break;
+				 	case "users":
+				 	
+				 		
+				 		break;
+				 		
+				 }
+			 } 
 		}
 	}
 	
 	public void escreverMsg(String msg) {	
+		JTextArea board = cGUI.getTextArea();
 		board.setText(msg);
 	}
 	
 	public String receberMsg() {
 		String in = "";
-		try { in = (String) inStream.readObject(); }
+
+		try { 
+			inStream = new ObjectInputStream(c.getCliente().getInputStream());
+			in = (String) inStream.readObject(); 
+			inStream.reset();
+			}
 		catch (IOException e) {} catch (ClassNotFoundException e) {}
 		return in;
 	}
 	
-	public void limparBoard() {
-		board.setText("");
-	}
-	
 	public Element readXML(String xml) {
+		
 		XPathFactory xpathFactory = XPathFactory.newInstance(); 
 		XPath xpath = xpathFactory.newXPath(); 
 		InputSource source = new InputSource(new StringReader(xml)); 
@@ -108,6 +117,28 @@ public class MessageReceiver implements Runnable {
 			e.printStackTrace();
 		} 
 		return null;
+	}
+	
+	public String listarPerguntas(Element xml) {
+		NodeList perguntas = xml.getChildNodes();
+		String msg = "";
+		for (int i = 0; i < perguntas.getLength(); i++) {
+			if(perguntas.item(i).hasAttributes()) {
+				String duracao = ((Element) perguntas.item(i)).getAttribute("duracao");
+				String tema = ((Element) perguntas.item(i)).getAttribute("tema");
+				String titulo = ((Element) perguntas.item(i)).getElementsByTagName("texto").item(0).getTextContent();
+				NodeList respPossiveis = ((Element) perguntas.item(i)).getElementsByTagName("resp");
+				String resp = "";
+				for (int j = 0; j < respPossiveis.getLength(); j++) {
+					resp += "	"+(j+1) + ". " + respPossiveis.item(j).getTextContent() + "\n";
+				}
+				msg += "Pergunta "+(i+1)+": "+titulo+"\n Tema: "+tema+"\n"+resp + "\n\n";
+				
+			}
+		}
+		
+		
+		return msg;
 	}
 	
 }

@@ -161,7 +161,7 @@ public class Service implements Runnable{
 															outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml");
 														}
 													}
-													atirar("<adicionar>Pergunta/s adicionada/s com sucesso.</adicionar>");
+													atirar("<adicionar>Pergunta(s) adicionada(s) com sucesso.</adicionar>");
 													
 												}
 											}
@@ -361,17 +361,11 @@ public class Service implements Runnable{
 						break;
 	
 					}
-					System.out.println();
 				}
 			} catch (TransformerException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} finally {
-				System.out.println("sai");
-//				fecharCanal();
-//				running = false;
-				
-			}
+			} 
 		} // end while
 	}
 	
