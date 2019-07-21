@@ -45,8 +45,8 @@ public class ClientGUI {
 	private JTextField respPossivel_4;
 	private JButton btnSubmit;
 	private JButton btnAdicionarPergunta;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField alunoSelec;
+	private JTextField inIDPergunta;
 	private JTextField inDuracao;
 	
 	/**
@@ -94,11 +94,11 @@ public class ClientGUI {
 		
 //		showLogin();
 //		showAdicionarPergunta();
-//		showEnviarPergunta();
+		showEnviarPergunta();
 //		showAlunos();
 //		showInterfaceAluno();
 //		showMenu();
-		showPerguntas();
+//		showPerguntas();
 	}
 	
 	//check
@@ -158,10 +158,17 @@ public class ClientGUI {
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
 		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
+		
 		btnVerPerguntas = new JButton("Ver Perguntas");
 		btnVerPerguntas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showPerguntas();
+				String listarPerguntas = "<listar tipo='perguntas'/>";
+				c.enviarMsg(listarPerguntas);
+
 			}
 		});
 		btnVerPerguntas.setBounds(166, 103, 133, 31);
@@ -180,6 +187,8 @@ public class ClientGUI {
 		btnSeleccionarPergunta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showEnviarPergunta();
+				String listarPerguntas = "<listar tipo='users'/>";
+				c.enviarMsg(listarPerguntas);
 			}
 		});
 		btnSeleccionarPergunta.setBounds(166, 187, 133, 31);
@@ -188,13 +197,18 @@ public class ClientGUI {
 		panel.revalidate();
 		panel.repaint();
 	}
-	//check
+
 	public void showInterfaceAluno() {
 		limparPanel();
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
+		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		textArea.setBounds(10, 23, 414, 98);
 		panel.add(textArea);
@@ -222,6 +236,11 @@ public class ClientGUI {
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
+		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		tituloPergunta = new JTextField();
 		tituloPergunta.setBounds(66, 121, 122, 20);
@@ -274,18 +293,6 @@ public class ClientGUI {
 		btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				/* <adicionarPergunta>
-				 * 	<pergunta  tema="basic" duracao="20">
-				 * 		<texto>Quantos quadrados estao presentes na seguinte imagem?</texto>
-				 * 		<anexoMultimedia>squares.jpeg</anexoMultimedia>
-				 * 		<respPossiveis>
-				 * 			<resp>8</resp>
-				 * 			<resp>10</resp>
-				 * 			<resp>11</resp>
-				 * 			<resp>12</resp>
-				 * 		</respPossiveis></pergunta>
-				 * </adicionarPergunta>
-				 * */
 				ArrayList<String> resps = getRespostasPossiveis();
 				if(!tituloPergunta.getText().isEmpty() && !inTema.getText().isEmpty() && resps.size() >= 1 ) {
 					String msg = "<adicionarPergunta><pergunta  tema='" + inTema.getText() + "' duracao='" + inDuracao.getText() + "'><texto>"
@@ -332,6 +339,11 @@ public class ClientGUI {
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
 		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
+		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -353,13 +365,18 @@ public class ClientGUI {
 		panel.revalidate();
 		panel.repaint();
 	}
-	//check
+
 	public void showAlunos() {
 		limparPanel();
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
+		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
 		
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.setBounds(160, 103, 133, 34);
@@ -381,29 +398,51 @@ public class ClientGUI {
 		textArea.setBounds(10, 11, 414, 81);
 		panel.add(textArea);
 		
+		scrollBar = new JScrollPane(textArea);
+		scrollBar.setBounds(10, 11, 414, 81);
+		scrollBar.setFocusable(false);
+		panel.add(scrollBar);
+		
 		JCheckBox chckbxTodos = new JCheckBox("Todos");
 		chckbxTodos.setBounds(10, 114, 66, 31);
 		panel.add(chckbxTodos);
 		
 		JLabel lblNaluno = new JLabel("N\u00BAAluno:");
-		lblNaluno.setBounds(82, 122, 46, 14);
+		lblNaluno.setBounds(82, 122, 66, 14);
 		panel.add(lblNaluno);
 		
-		textField = new JTextField();
-		textField.setBounds(138, 119, 86, 20);
-		panel.add(textField);
-		textField.setColumns(10);
+		alunoSelec = new JTextField();
+		alunoSelec.setBounds(180, 119, 86, 20);
+		panel.add(alunoSelec);
+		alunoSelec.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(138, 150, 86, 20);
-		panel.add(textField_1);
-		textField_1.setColumns(10);
+		inIDPergunta = new JTextField();
+		inIDPergunta.setBounds(180, 150, 86, 20);
+		panel.add(inIDPergunta);
+		inIDPergunta.setColumns(10);
 		
 		JLabel lblIdDaPergunta = new JLabel("ID da Pergunta:");
-		lblIdDaPergunta.setBounds(51, 153, 77, 14);
+		lblIdDaPergunta.setBounds(40, 153, 108, 14);
 		panel.add(lblIdDaPergunta);
 		
 		btnSubmit = new JButton("Submit");
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				c.enviarMsg(getPerguntaSeleccionada());
+			}
+
+			private String getPerguntaSeleccionada() {
+				String msg = "<selecionarPergunta index='" + inIDPergunta.getText() + "' todos='" + Boolean.toString(chckbxTodos.isSelected()) 
+					+ "'>";
+				if(chckbxTodos.isSelected()) {
+					msg += "</selecionarPergunta>";
+				} else {
+					msg += "<aluno numero='" + alunoSelec.getText() + "'/></selecionarPergunta>";
+				}
+				System.out.println(msg);
+				return msg;
+			}
+		});
 		btnSubmit.setBounds(135, 211, 89, 23);
 		panel.add(btnSubmit);
 		

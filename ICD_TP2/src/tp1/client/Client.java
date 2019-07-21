@@ -7,6 +7,7 @@ import java.net.Socket;
 
 public class Client {
 	Socket cliente;	
+	String tipoCliente;
 	String host = "localhost";
 	ObjectOutputStream outStream;
 	static final int numeroPorto= 1571; // o n�mero do porto tem de ser um n�mero maior que 1024 e que n�o esteja a ser usado
@@ -17,6 +18,8 @@ public class Client {
 			cliente= new Socket(host, numeroPorto);
 			outStream = new ObjectOutputStream(cliente.getOutputStream()); 
 			System.out.println("Ligacao ao servidor estabelecida.");
+			
+			this.tipoCliente = "";
 			}
 		catch (IOException e) {
 			System.out.println("Nao foi encontrado um servidor.");
@@ -51,5 +54,13 @@ public class Client {
 
 	public Socket getCliente() {
 		return cliente;
+	}
+	
+	public String getTipoCliente() {
+		return tipoCliente;
+	}
+
+	public void setTipoCliente(String tipoCliente) {
+		this.tipoCliente = tipoCliente;
 	}
 } 

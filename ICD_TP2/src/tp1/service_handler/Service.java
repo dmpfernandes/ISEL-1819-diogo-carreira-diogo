@@ -262,7 +262,7 @@ public class Service implements Runnable{
 											}
 										}
 									}
-									atirar("<pergunta index="+idPergunta+" status='success'/>");
+									atirar("<pergunta index='"+idPergunta+"' status='success'/>");
 								}
 				            }
 						}
@@ -334,7 +334,7 @@ public class Service implements Runnable{
 						
 						//Envio :<resultado idxPergunta="0" sucesso="true/false" resp="idxResp"/>
 						break;
-					case "listar": // kill
+					case "listar":
 						
 						if(root.hasAttribute("tipo")) {
 							String resposta = "";
