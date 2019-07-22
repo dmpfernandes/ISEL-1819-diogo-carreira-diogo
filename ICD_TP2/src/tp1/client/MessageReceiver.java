@@ -55,18 +55,25 @@ public class MessageReceiver implements Runnable {
 				 		break;
 				 	case "adicionar":
 				 		cGUI.showMenu();
-			 			escreverMsg(xml.getTextContent());
+				 		escreverMsg(xml.getTextContent());
 				 		
 				 		break;
 				 	case "pergunta":
-				 		cGUI.showMenu();
-			 			escreverMsg(xml.getTextContent());
+				 		if(xml.hasAttribute("status")) {
+				 			cGUI.showMenu();
+				 			escreverMsg("Pergunta enviada com status: "+xml.getAttribute("status"));
+				 		}
+				 		else {
+				 			cGUI.showInterfaceAluno();
+				 			escreverMsg(listarPergunta(xml));
+				 			
+				 		}
 				 		
 				 		break;
 				 	case "resultado":
 				 		cGUI.showInterfaceAluno();
-				 		String sucesso = xml.getAttribute("success");
-				 		if(Boolean.valueOf(sucesso)) {
+				 		String sucesso = xml.getAttribute("sucesso");
+				 		if(sucesso.equals("true")) {
 				 			escreverMsg("Resposta Certa");
 				 		}
 				 		else { 
@@ -78,8 +85,8 @@ public class MessageReceiver implements Runnable {
 				 		escreverMsg(listarPerguntas(xml));	
 				 		break;
 				 	case "users":
-				 	
-				 		
+				 		cGUI.showEnviarPergunta();
+				 		escreverMsg(listarUsers(xml));	
 				 		break;
 				 		
 				 }
@@ -124,19 +131,42 @@ public class MessageReceiver implements Runnable {
 		String msg = "";
 		for (int i = 0; i < perguntas.getLength(); i++) {
 			if(perguntas.item(i).hasAttributes()) {
-				String duracao = ((Element) perguntas.item(i)).getAttribute("duracao");
-				String id = ((Element) perguntas.item(i)).getAttribute("id").substring(2);
-				String tema = ((Element) perguntas.item(i)).getAttribute("tema");
-				String titulo = ((Element) perguntas.item(i)).getElementsByTagName("texto").item(0).getTextContent();
-				NodeList respPossiveis = ((Element) perguntas.item(i)).getElementsByTagName("resp");
-				String resp = "";
-				int count = 0;
-				for (int j = 0; j < respPossiveis.getLength(); j++) {
-					count++;
-					resp += "	"+count + ". " + respPossiveis.item(j).getTextContent() + "\n";
-				}
-				msg += "Pergunta "+id+": "+titulo+"\n Tema: "+tema+"\n"+resp + "\n\n";
+				msg += listarPergunta((Element) perguntas.item(i));
+			}
+
+		}
+		return msg;
+	}
+	public String listarPergunta(Element xml) {
+			String duracao = xml.getAttribute("duracao");
+			String id = xml.getAttribute("id").substring(2);
+			String tema = xml.getAttribute("tema");
+			String titulo = xml.getElementsByTagName("texto").item(0).getTextContent();
+			NodeList respPossiveis = xml.getElementsByTagName("resp");
+			String resp = "";
+			int count = 0;
+			for (int j = 0; j < respPossiveis.getLength(); j++) {
 				
+				resp += "	"+count + ". " + respPossiveis.item(j).getTextContent() + "\n";
+				count++;
+			}
+			return id+"- "+titulo+"\n Tema: "+tema+"\n"+resp + "\n\n";
+			
+	}
+	
+	
+	private String listarUsers(Element xml) {
+		NodeList users = xml.getChildNodes();
+		String msg = "";
+		for (int i = 0; i < users.getLength(); i++) {
+			if(users.item(i).hasAttributes()) {
+				String tipo = ((Element) users.item(i)).getAttribute("tipo");
+				String uid = ((Element) users.item(i)).getAttribute("uid");
+				String nome = ((Element) users.item(i)).getElementsByTagName("nome").item(0).getTextContent();
+				String nAluno = ((Element) users.item(i)).getElementsByTagName("numero").item(0).getTextContent();
+				msg += "Utilizador: "+uid+"\n Nome: "+nome+"\n Nº Aluno: ";
+				if(nome != "admin") msg+= nAluno;
+				msg += "\n\n";
 			}
 		}
 		

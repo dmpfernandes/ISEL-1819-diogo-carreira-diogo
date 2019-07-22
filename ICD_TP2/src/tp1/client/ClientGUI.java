@@ -45,9 +45,10 @@ public class ClientGUI {
 	private JTextField respPossivel_4;
 	private JButton btnSubmit;
 	private JButton btnAdicionarPergunta;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField nAluno;
+	private JTextField idPergunta;
 	private JTextField inDuracao;
+	private String userNumber;
 	
 	/**
 	 * Launch the application.
@@ -107,9 +108,9 @@ public class ClientGUI {
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String user = inNAluno.getText();
+				userNumber = inNAluno.getText();
 				String pass = new String(inPassword.getPassword());
-				String xmlLogin = "<login numero='"+user+"' pass='"+pass+"'/>";
+				String xmlLogin = "<login numero='"+userNumber+"' pass='"+pass+"'/>";
 				c.enviarMsg(xmlLogin);
 				System.out.println(xmlLogin);
 			}
@@ -186,7 +187,8 @@ public class ClientGUI {
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showEnviarPergunta();
+				String xmlUsers = "<listar tipo='users'/>";
+				c.enviarMsg(xmlUsers);
 			}
 		});
 		btnSeleccionarPergunta.setBounds(166, 187, 133, 31);
@@ -208,8 +210,6 @@ public class ClientGUI {
 		scrollBar.setFocusable(false);
 		panel.add(scrollBar);
 		
-		textArea.setBounds(10, 23, 414, 98);
-		panel.add(textArea);
 		
 		inputResposta = new JTextField();
 		inputResposta.setBounds(76, 132, 86, 20);
@@ -221,6 +221,20 @@ public class ClientGUI {
 		panel.add(lblResposta);
 		
 		JButton submitResposta = new JButton("Submeter");
+		submitResposta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//<resposta numeroAluno="12346" indexPergunta="5" indexResposta="0"/>
+				if(!inputResposta.getText().isEmpty()) {
+					String a = textArea.getText();
+					String[] as = a.split("-");
+				
+					String index = as[0];
+					System.out.println(inputResposta.getText());
+					String xmlResposta = "<resposta numeroAluno='"+userNumber+"' indexPergunta='"+index+"' indexResposta='"+inputResposta.getText()+"'/>";
+					c.enviarMsg(xmlResposta);
+				}
+			}
+		});
 		submitResposta.setBounds(200, 215, 89, 23);
 		panel.add(submitResposta);
 		
@@ -357,7 +371,8 @@ public class ClientGUI {
 		btnSeleccionarPergunta = new JButton("Seleccionar Pergunta");
 		btnSeleccionarPergunta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showEnviarPergunta();
+				String xmlUsers = "<listar tipo='users'/>";
+				c.enviarMsg(xmlUsers);
 			}
 		});
 		btnSeleccionarPergunta.setBounds(160, 103, 133, 34);
@@ -421,21 +436,39 @@ public class ClientGUI {
 		lblNaluno.setBounds(82, 122, 46, 14);
 		panel.add(lblNaluno);
 		
-		textField = new JTextField();
-		textField.setBounds(138, 119, 86, 20);
-		panel.add(textField);
-		textField.setColumns(10);
+		nAluno = new JTextField();
+		nAluno.setBounds(138, 119, 86, 20);
+		panel.add(nAluno);
+		nAluno.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(138, 150, 86, 20);
-		panel.add(textField_1);
-		textField_1.setColumns(10);
+		idPergunta = new JTextField();
+		idPergunta.setBounds(138, 150, 86, 20);
+		panel.add(idPergunta);
+		idPergunta.setColumns(10);
 		
 		JLabel lblIdDaPergunta = new JLabel("ID da Pergunta:");
 		lblIdDaPergunta.setBounds(51, 153, 77, 14);
 		panel.add(lblIdDaPergunta);
 		
 		btnSubmit = new JButton("Submit");
+		btnSubmit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				c.enviarMsg(getPerguntaSeleccionada());
+
+			}
+			
+			private String getPerguntaSeleccionada() {
+				String msg = "<selecionarPergunta index='" + idPergunta.getText() + "' todos='" + Boolean.toString(chckbxTodos.isSelected()) 
+					+ "'>";
+				if(chckbxTodos.isSelected()) {
+					msg += "</selecionarPergunta>";
+				} else {
+					msg += "<aluno numero='" + nAluno.getText() + "'/></selecionarPergunta>";
+				}
+				System.out.println(msg);
+				return msg;
+			}
+		});
 		btnSubmit.setBounds(135, 211, 89, 23);
 		panel.add(btnSubmit);
 		
