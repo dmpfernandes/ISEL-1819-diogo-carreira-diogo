@@ -5,16 +5,22 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.text.JTextComponent;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import java.awt.Font;
+import java.awt.GridBagLayout;
+
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 
@@ -97,7 +103,7 @@ public class ClientGUI {
 //		showAdicionarPergunta();
 //		showEnviarPergunta();
 //		showAlunos();
-//		showInterfaceAluno();
+//		showInterfaceAluno(5000);
 //		showMenu();
 //		showPerguntas();
 	}
@@ -198,8 +204,9 @@ public class ClientGUI {
 		panel.repaint();
 	}
 	//check
-	public void showInterfaceAluno() {
+	public void showInterfaceAluno(int duracao) {
 		limparPanel();
+		
 		
 		textArea = new JTextArea();
 		textArea.setBounds(10, 11, 414, 81);
@@ -237,6 +244,12 @@ public class ClientGUI {
 		});
 		submitResposta.setBounds(200, 215, 89, 23);
 		panel.add(submitResposta);
+		
+		if(duracao != 0) {
+			TestPane countdown = new TestPane(duracao);
+			panel.add(countdown);
+			countdown.start();
+		}
 		
 		panel.revalidate();
 		panel.repaint();
@@ -480,6 +493,7 @@ public class ClientGUI {
 
 		panel.removeAll();	
 	}
+	
 
 	public JTextArea getTextArea() {
 		return textArea;
@@ -488,4 +502,71 @@ public class ClientGUI {
 	public void setTextArea(JTextArea textArea) {
 		this.textArea = textArea;
 	}
+	
+	public void respostaForaHoras() {
+		String a = textArea.getText();
+		String[] as = a.split("-");
+	
+		String index = as[0];
+		System.out.println(inputResposta.getText());
+		String xmlResposta = "<resposta numeroAluno='"+userNumber+"' indexPergunta='"+index+"' indexResposta='-1'/>";
+		c.enviarMsg(xmlResposta);
+	}
+	
+	
+	public class TestPane extends JPanel {
+
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Timer timer;
+        private long startTime = -1;
+        private long duration = 5000;
+
+        private JLabel label;
+
+        public TestPane(long duration) {
+            setLayout(new GridBagLayout());
+            setBounds(338, 104, 86, 29);
+            	
+            
+            timer = new Timer(10, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (startTime < 0) {
+                        startTime = System.currentTimeMillis();
+                    }
+                    long now = System.currentTimeMillis();
+                    long clockTime = now - startTime;
+                    if (clockTime >= duration) {
+                        clockTime = duration;
+                        respostaForaHoras();
+                        timer.stop();
+                    }
+                    SimpleDateFormat df = new SimpleDateFormat("mm:ss:SSS");
+                    label.setText(df.format(duration - clockTime));
+                    
+                }
+            });
+            timer.setInitialDelay(0);
+            label = new JLabel("...");
+            add(label);
+        
+        }
+        
+        public void start() {
+        	if (!timer.isRunning()) {
+                startTime = -1;
+                timer.start();
+            }
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(200, 200);
+        }
+
+    }
+	
 }

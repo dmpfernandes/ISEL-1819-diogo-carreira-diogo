@@ -280,12 +280,16 @@ public class Service implements Runnable {
 											}
 										}
 									}
-									System.out.println("perguntaSelecionada :" + perguntaSelecionada);
 									Element pSelecionada = readXML(perguntaSelecionada);
 									NodeList resps = pSelecionada.getElementsByTagName("resp");
 									for (int i = 0; i < resps.getLength(); i++) {
 										Element e = (Element) resps.item(i);
 										if (e.hasAttribute("resid")) {
+											if(idxResposta.equals(String.valueOf(-1))) {
+												String resultado = "<resultado idxPergunta='" + idPergunta
+														+ "' sucesso='false' resp='" + idxResposta + "' />";
+												atirar(resultado);
+											}else 
 											if (e.getAttribute("resid").equals(idxResposta)) {
 												String valid = e.getAttribute("valid");
 												System.out.println(valid);
@@ -297,25 +301,11 @@ public class Service implements Runnable {
 												Node logXml = readXML(log);
 												Element logs = (Element) readXMLfromFile("logs.xml");
 												logs.appendChild(logs.getOwnerDocument().importNode(logXml, true));
-//										System.out.println("logs:" + logs);
-//										System.out.println("log:" + log);
 												outputXML(logs.getOwnerDocument(), "logs.xml");
 
-//										rootDBitems = readXMLfromFile("perguntas.xml");
-												/*
-												 * if (root.getNodeType()==Node.ELEMENT_NODE && root.hasChildNodes()) {
-												 * NodeList inputPerguntas = root.getChildNodes(); for (int p = 0; p <
-												 * inputPerguntas.getLength(); p++) {
-												 * if(inputPerguntas.item(p).hasAttributes()) { Element ep = (Element)
-												 * inputPerguntas.item(p);
-												 * ep.setAttribute("id","_0"+(getlastPerguntaID()+1)); Node imported =
-												 * rootDBitems.getOwnerDocument().importNode(ep, true);
-												 * rootDBitems.appendChild(imported);
-												 * outputXML(rootDBitems.getOwnerDocument(),"perguntas.xml"); } }
-												 * atirar("Pergunta/s adicionada/s com sucesso.");
-												 */
-												atirar(resultado);
+												
 											}
+											
 
 										}
 									}

@@ -45,7 +45,7 @@ public class MessageReceiver implements Runnable {
 				 			
 				 		}
 				 		else if(xml.getAttribute("success").equals("true")&&xml.getAttribute("type").equals("aluno")) {
-				 			cGUI.showInterfaceAluno();
+				 			cGUI.showInterfaceAluno(0);
 				 			escreverMsg("Login Success");
 				 			
 				 		}else {
@@ -64,14 +64,15 @@ public class MessageReceiver implements Runnable {
 				 			escreverMsg("Pergunta enviada com status: "+xml.getAttribute("status"));
 				 		}
 				 		else {
-				 			cGUI.showInterfaceAluno();
+				 			String duracao = xml.getAttribute("duracao");
+				 			cGUI.showInterfaceAluno(Integer.valueOf(duracao)*1000);
 				 			escreverMsg(listarPergunta(xml));
 				 			
 				 		}
 				 		
 				 		break;
 				 	case "resultado":
-				 		cGUI.showInterfaceAluno();
+				 		cGUI.showInterfaceAluno(0);
 				 		String sucesso = xml.getAttribute("sucesso");
 				 		if(sucesso.equals("true")) {
 				 			escreverMsg("Resposta Certa");
